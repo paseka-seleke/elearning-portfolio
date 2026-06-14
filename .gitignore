@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+paseka.db
+.venv/
+venv/
+.idea/
+.env
+.env.local

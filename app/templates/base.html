@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ SITE.name }}{% endblock %} | {{ SITE.name }}</title>
+  <meta name="description" content="{{ SITE.tagline }}. Instructional design, LMS, virtual training, and AI powered learning.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind Play CDN (zero build step for development) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink:    "#142235",
+            ink2:   "#243754",
+            accent: "#14806F",
+            warm:   "#C76A39",
+            mist:   "#F1ECE3",
+            slate2: "#5E6777",
+            line:   "#DDD6CA",
+            panel:  "#FFFDF8",
+            sand:   "#E8DFD1",
+          },
+          fontFamily: {
+            display: ["Space Grotesk", "system-ui", "sans-serif"],
+            body:    ["Manrope", "system-ui", "sans-serif"],
+            script:  ["Caveat", "cursive"],
+          },
+          boxShadow: {
+            soft: "0 1px 2px rgba(20,34,53,.04), 0 16px 36px rgba(20,34,53,.08)",
+            lift: "0 24px 60px rgba(20,34,53,.16)",
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- HTMX for backend driven interactivity, Alpine for small UI state -->
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="font-body bg-mist text-ink antialiased">
+
+  {% include "components/nav.html" %}
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "components/footer.html" %}
+
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

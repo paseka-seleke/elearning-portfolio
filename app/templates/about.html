@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block content %}
+
+<section class="mx-auto max-w-7xl px-5 py-14 lg:px-8">
+  <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+    <div class="rounded-[2rem] border border-line bg-panel/95 p-7 shadow-soft">
+      <span class="eyebrow">About</span>
+      <h1 class="mt-6 font-display text-5xl font-700 tracking-[-0.04em]">Paseka Seleke</h1>
+      <p class="mt-3 font-display text-xl text-slate2">eLearning and digital learning specialist</p>
+      <p class="mt-8 max-w-3xl text-base leading-relaxed text-ink/90">{{ cv.summary }}</p>
+    </div>
+
+    <aside class="overflow-hidden rounded-[2rem] border border-line bg-ink text-white shadow-lift">
+      <div class="border-b border-white/10 px-7 py-6">
+        <p class="text-[11px] font-700 uppercase tracking-[0.2em] text-white/60">Contact</p>
+        <h2 class="mt-3 font-display text-2xl font-700">Available for strategic and delivery-focused engagements.</h2>
+      </div>
+      <div class="space-y-4 px-7 py-6">
+        <div class="rounded-[1.4rem] bg-white/6 p-4">
+          <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-white/60">Location</p>
+          <p class="mt-2 text-sm font-700 text-white">{{ SITE.location }}</p>
+        </div>
+        <div class="rounded-[1.4rem] bg-white/6 p-4">
+          <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-white/60">Email</p>
+          <a href="mailto:{{ SITE.email }}" class="mt-2 block text-sm font-700 text-white hover:text-accent">{{ SITE.email }}</a>
+        </div>
+        <div class="rounded-[1.4rem] bg-white/6 p-4">
+          <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-white/60">Profile</p>
+          <a href="{{ SITE.linkedin }}" class="mt-2 block text-sm font-700 text-white hover:text-accent">LinkedIn</a>
+        </div>
+        <a href="/contact" class="mt-2 inline-flex items-center justify-center rounded-full bg-accent px-5 py-3 text-sm font-700 text-white hover:opacity-90">Book a consultation</a>
+      </div>
+    </aside>
+  </div>
+
+  <div class="mt-12">
+    <div class="flex items-end justify-between gap-6">
+      <div>
+        <span class="eyebrow">Experience</span>
+        <h2 class="mt-5 font-display text-3xl font-700 tracking-[-0.03em]">Work experience</h2>
+      </div>
+    </div>
+    <div class="mt-6 space-y-6">
+      {% for job in cv.experience %}
+      <div class="rounded-[2rem] border border-line bg-white p-7 shadow-soft">
+        <div class="flex flex-wrap items-baseline justify-between gap-3">
+          <div>
+            <h3 class="font-display text-2xl font-700">{{ job.role }}</h3>
+            <p class="mt-2 text-sm font-700 uppercase tracking-[0.16em] text-accent">{{ job.org }}</p>
+          </div>
+          <span class="rounded-full border border-line bg-mist px-3 py-1 text-xs font-700 uppercase tracking-[0.16em] text-slate2">{{ job.period }}</span>
+        </div>
+        <ul class="mt-6 grid gap-3">
+          {% for p in job.points %}
+          <li class="flex items-start gap-3 text-sm leading-relaxed text-ink/88">
+            <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-accent"></span>{{ p }}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="mt-12 grid gap-6 lg:grid-cols-3">
+    <div class="rounded-[2rem] border border-line bg-white p-6 shadow-soft">
+      <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Capabilities</p>
+      <h3 class="mt-4 font-display text-2xl font-700">Key skills</h3>
+      <ul class="mt-5 space-y-3 text-sm text-slate2">
+        {% for s in cv.skills %}<li>{{ s }}</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="rounded-[2rem] border border-line bg-white p-6 shadow-soft">
+      <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Platforms and tools</p>
+      <h3 class="mt-4 font-display text-2xl font-700">Learning systems</h3>
+      <div class="mt-5 flex flex-wrap gap-2">
+        {% for p in cv.lms_platforms %}<span class="rounded-full border border-line bg-mist px-3 py-1 text-xs font-700 text-slate2">{{ p }}</span>{% endfor %}
+      </div>
+      <h3 class="mt-6 font-display text-xl font-700">Instructional design tools</h3>
+      <div class="mt-4 flex flex-wrap gap-2">
+        {% for t in cv.id_tools %}<span class="rounded-full border border-line bg-mist px-3 py-1 text-xs font-700 text-slate2">{{ t }}</span>{% endfor %}
+      </div>
+    </div>
+    <div class="rounded-[2rem] border border-line bg-white p-6 shadow-soft">
+      <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Selected projects</p>
+      <h3 class="mt-4 font-display text-2xl font-700">Proof of work</h3>
+      <ul class="mt-5 space-y-3 text-sm leading-relaxed text-slate2">
+        {% for p in cv.projects %}<li class="flex items-start gap-3"><span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-warm"></span>{{ p }}</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}

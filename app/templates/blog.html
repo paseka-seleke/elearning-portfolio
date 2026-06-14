@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Paseka's Thoughts{% endblock %}
+{% block content %}
+
+<section class="mx-auto max-w-5xl px-5 lg:px-8 py-16">
+  <div class="max-w-2xl">
+    <p class="text-xs font-600 uppercase tracking-wide text-accent">Blog</p>
+    <h1 class="mt-2 font-display text-4xl font-700 tracking-tight">Paseka's Thoughts</h1>
+    <p class="mt-4 text-lg text-slate2">Practical reflections, industry trends, and lessons learned on eLearning, LMS management, AI in education, virtual training, and digital learning transformation.</p>
+  </div>
+
+  <div class="mt-12 grid gap-6 md:grid-cols-2">
+    {% for post in posts %}
+    <a href="/blog/{{ post.slug }}" class="group flex flex-col rounded-2xl border border-line bg-white p-7 transition-all hover:border-accent/40 hover:shadow-soft">
+      <div class="flex items-center justify-between">
+        <span class="rounded-lg bg-mist px-2.5 py-1 text-xs font-600 text-slate2">{{ post.category }}</span>
+        <span class="text-xs text-slate2">{{ post.published.strftime('%d %b %Y') }}</span>
+      </div>
+      <h2 class="mt-4 font-display text-lg font-700 leading-snug group-hover:text-accent">{{ post.title }}</h2>
+      <p class="mt-2 flex-1 text-sm text-slate2">{{ post.excerpt }}</p>
+      <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-600 text-accent">
+        Read more
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

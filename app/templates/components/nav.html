@@ -1,0 +1,105 @@
+<header x-data="{ open: false, scrolled: false, servicesOpen: false, mobileServicesOpen: false }"
+        @scroll.window="scrolled = window.scrollY > 8"
+        @click.outside="servicesOpen = false"
+        class="sticky top-0 z-40 border-b border-line/60 backdrop-blur-xl bg-[#f6f2ea]/88 transition-all"
+        :class="scrolled ? 'shadow-soft' : ''">
+  <nav class="mx-auto max-w-7xl px-5 lg:px-8">
+    <div class="flex h-16 items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <span class="grid h-10 w-10 place-items-center rounded-2xl border border-ink/10 bg-panel text-ink font-display font-bold shadow-soft transition-transform group-hover:-translate-y-0.5">P</span>
+        <span class="font-script text-[1.7rem] font-700 leading-none tracking-normal text-ink sm:text-[1.95rem]">{{ SITE.name }}</span>
+      </a>
+
+      <div class="hidden lg:flex items-center gap-1 rounded-full border border-line/80 bg-panel/80 px-2 py-1 shadow-soft">
+        {% for label, route in NAV %}
+          {% if route == "home" %}
+            {% set href = "/" %}
+            <a href="{{ href }}"
+               class="rounded-full px-4 py-2 text-sm font-700 transition-colors {% if active == label %}bg-ink text-white{% else %}text-slate2 hover:bg-mist hover:text-ink{% endif %}">
+              {{ label }}
+            </a>
+          {% elif route == "about" %}
+            <a href="/about"
+               class="rounded-full px-4 py-2 text-sm font-700 transition-colors {% if active == label %}bg-ink text-white{% else %}text-slate2 hover:bg-mist hover:text-ink{% endif %}">
+              {{ label }}
+            </a>
+          {% elif route == "services" %}
+            <div class="relative"
+                 @mouseenter="servicesOpen = true"
+                 @mouseleave="servicesOpen = false">
+              <button type="button"
+                      @click="servicesOpen = !servicesOpen"
+                      class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-700 transition-colors {% if active == label %}bg-ink text-white{% else %}text-slate2 hover:bg-mist hover:text-ink{% endif %}">
+                {{ label }}
+                <svg class="transition-transform" :class="servicesOpen ? 'rotate-180' : ''" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div x-show="servicesOpen" x-cloak x-transition
+                   class="absolute left-0 top-full mt-3 w-[21rem] rounded-[1.5rem] border border-line bg-panel p-3 shadow-lift">
+                <div class="grid gap-1">
+                  {% for item_label, item_slug in SERVICE_MENU %}
+                  <a href="/services/{{ item_slug }}"
+                     class="rounded-[1.1rem] px-4 py-3 text-sm font-600 leading-relaxed transition-colors {% if active == 'Services' and item_slug == slug %}bg-ink text-white{% else %}text-ink hover:bg-mist{% endif %}">
+                    {{ item_label }}
+                  </a>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% elif route == "samples" %}
+            <a href="/samples"
+               class="rounded-full px-4 py-2 text-sm font-700 transition-colors {% if active == label %}bg-ink text-white{% else %}text-slate2 hover:bg-mist hover:text-ink{% endif %}">
+              {{ label }}
+            </a>
+          {% elif route == "blog" %}
+            <a href="/blog"
+               class="rounded-full px-4 py-2 text-sm font-700 transition-colors {% if active == label %}bg-ink text-white{% else %}text-slate2 hover:bg-mist hover:text-ink{% endif %}">
+              {{ label }}
+            </a>
+          {% elif route == "contact" %}
+            <a href="/contact"
+               class="rounded-full px-4 py-2 text-sm font-700 transition-colors {% if active == label %}bg-ink text-white{% else %}text-slate2 hover:bg-mist hover:text-ink{% endif %}">
+              {{ label }}
+            </a>
+          {% endif %}
+        {% endfor %}
+        <a href="/contact"
+           class="ml-2 rounded-full bg-accent px-4 py-2 text-sm font-700 text-white hover:opacity-90 transition-colors">
+          Book a consultation
+        </a>
+      </div>
+
+      <button @click="open = !open" class="lg:hidden grid h-10 w-10 place-items-center rounded-full border border-line bg-panel text-ink shadow-soft"
+              aria-label="Toggle menu">
+        <svg x-show="!open" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg x-show="open" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg>
+      </button>
+    </div>
+
+    <div x-show="open" x-cloak x-collapse class="lg:hidden pb-4">
+      <div class="rounded-3xl border border-line bg-panel/95 p-3 shadow-soft">
+        <a href="/" class="block rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'Home' %}bg-ink text-white{% else %}text-slate2{% endif %}">Home</a>
+        <a href="/about" class="mt-1 block rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'About' %}bg-ink text-white{% else %}text-slate2{% endif %}">About</a>
+
+        <div class="mt-1 rounded-[1.4rem] border border-line/80 bg-white/70 px-2 py-2">
+          <button type="button" @click="mobileServicesOpen = !mobileServicesOpen"
+                  class="flex w-full items-center justify-between rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'Services' %}bg-ink text-white{% else %}text-slate2{% endif %}">
+            <span>Services</span>
+            <svg class="transition-transform" :class="mobileServicesOpen ? 'rotate-180' : ''" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div x-show="mobileServicesOpen" x-cloak x-collapse class="mt-2 space-y-1">
+            {% for item_label, item_slug in SERVICE_MENU %}
+            <a href="/services/{{ item_slug }}"
+               class="block rounded-2xl px-3 py-2.5 text-sm font-600 {% if active == 'Services' and item_slug == slug %}bg-ink text-white{% else %}text-slate2{% endif %}">
+              {{ item_label }}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <a href="/samples" class="mt-1 block rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'Sample Courses' %}bg-ink text-white{% else %}text-slate2{% endif %}">Sample Courses</a>
+        <a href="/blog" class="mt-1 block rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'Blog' %}bg-ink text-white{% else %}text-slate2{% endif %}">Blog</a>
+        <a href="/contact" class="mt-1 block rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'Contact' %}bg-ink text-white{% else %}text-slate2{% endif %}">Contact</a>
+      </div>
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,19 @@
+{# A single unanswered question. Each option posts the choice to the backend,
+   which returns the scored result (partials/quiz_result.html) to replace it. #}
+{% set question_dom_id = 'q-' ~ code ~ '-' ~ q.id %}
+<div id="{{ question_dom_id }}" class="rounded-2xl border border-line bg-white p-6">
+  <p class="font-600">{{ loop.index if loop is defined else q.order + 1 }}. {{ q.prompt }}</p>
+  <div class="mt-4 space-y-2.5">
+    {% for opt in q.options %}
+    <button
+        hx-post="/samples/{{ course.slug }}/answer/{{ q.id }}"
+        hx-vals='{"choice": {{ loop.index0 }} }'
+        hx-include="#course-locale"
+        hx-target="#{{ question_dom_id }}"
+        hx-swap="outerHTML"
+        class="block w-full rounded-xl border border-line px-4 py-3 text-left text-sm transition-colors hover:border-accent hover:bg-accent/5">
+      {{ opt }}
+    </button>
+    {% endfor %}
+  </div>
+</div>
