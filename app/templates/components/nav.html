@@ -5,9 +5,11 @@
         :class="scrolled ? 'shadow-soft' : ''">
   <nav class="mx-auto max-w-7xl px-5 lg:px-8">
     <div class="flex h-16 items-center justify-between gap-4">
-      <a href="/" class="flex items-center gap-2.5 group">
+      <a href="/" class="flex min-w-0 items-center gap-2.5 group">
         <span class="grid h-10 w-10 place-items-center rounded-2xl border border-ink/10 bg-panel text-ink font-display font-bold shadow-soft transition-transform group-hover:-translate-y-0.5">P</span>
-        <span class="font-script text-[1.7rem] font-700 leading-none tracking-normal text-ink sm:text-[1.95rem]">{{ SITE.name }}</span>
+        <img src="/static/brand/paseka-seleke-signature.svg"
+             alt="{{ SITE.name }}"
+             class="h-10 w-auto max-w-[15rem] shrink min-w-0 sm:h-12 sm:max-w-[19rem]">
       </a>
 
       <div class="hidden lg:flex items-center gap-1 rounded-full border border-line/80 bg-panel/80 px-2 py-1 shadow-soft">

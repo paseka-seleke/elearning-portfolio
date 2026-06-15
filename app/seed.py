@@ -6,6 +6,7 @@ Run automatically on app startup if the database is empty, or manually:
 
     python -m app.seed
 """
+from datetime import date
 from sqlmodel import Session, select
 from app.database import ENGINE, init_db
 from app.models import SampleCourse, QuizQuestion, BlogPost
@@ -933,6 +934,7 @@ BLOG_POSTS = [
         "title": "Why Digital Academies Need Strong Learner Engagement Strategies",
         "category": "Digital Academy Strategy",
         "excerpt": "A great platform is not enough. Completion comes from deliberate engagement design, not hope.",
+        "published": date(2026, 2, 11),
         "body": "Many organisations launch a digital academy, fill it with good courses, and then wonder why completion stays low.\n\nThe platform is only the stage. Engagement is the script. A learner who enrols and hears nothing for two weeks has effectively left. Welcome messages, timely nudges, and re engagement campaigns are not extras, they are the difference between a library and a learning programme.\n\nThe practical move is to map the learner journey and attach a communication to each moment that matters: enrolment, first inactivity, mid course, and completion.",
     },
     {
@@ -940,6 +942,7 @@ BLOG_POSTS = [
         "title": "How AI Tutors Can Support Online Learners",
         "category": "AI in Learning",
         "excerpt": "Used well, an AI copilot extends support to every learner at any hour, without replacing the human.",
+        "published": date(2026, 4, 27),
         "body": "An AI tutor is most useful as a patient first responder. It answers the small questions that would otherwise stall a learner at 9pm when no facilitator is online.\n\nThe key is scope. Ground the assistant in your own course content, set clear limits, and route anything high stakes back to a human. Done this way, AI raises the floor of support without pretending to be the ceiling.",
     },
     {
@@ -947,6 +950,7 @@ BLOG_POSTS = [
         "title": "Lessons Learned from Managing Moodle at Scale",
         "category": "Moodle Tips",
         "excerpt": "Running Moodle for thousands of learners across languages teaches you to design for maintenance, not just launch.",
+        "published": date(2025, 11, 19),
         "body": "At scale, the work is rarely the launch. It is the second year: plugin updates, course archiving, role hygiene, and support that does not fall over.\n\nThree habits pay off: keep a clean role and permission structure, document your configuration so it survives staff changes, and build learner support workflows before you need them.",
     },
     {
@@ -954,6 +958,7 @@ BLOG_POSTS = [
         "title": "The Role of Instructional Design in Professional Training",
         "category": "Instructional Design",
         "excerpt": "Good content is not a good course. Design is what turns information into capability.",
+        "published": date(2026, 1, 8),
         "body": "Subject matter experts know the content. Instructional design decides how that content becomes something a busy professional can actually learn and apply.\n\nOutcomes first, then assessment, then the lesson. When you design in that order, every activity has a job, and nothing is in the course just because it was easy to add.",
     },
     {
@@ -961,6 +966,7 @@ BLOG_POSTS = [
         "title": "Using LMS Analytics to Improve Course Completion",
         "category": "LMS Lessons Learned",
         "excerpt": "Your LMS already knows who is about to drop off. The question is whether anyone is looking.",
+        "published": date(2026, 5, 6),
         "body": "Completion rarely fails at the end. It fails quietly in the first week. Analytics let you see the drop off curve and act before learners disappear.\n\nStart simple: a weekly view of progress and last activity, a flag for learners who stalled, and one re engagement message. Measure, then refine.",
     },
 ]
