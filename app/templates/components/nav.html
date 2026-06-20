@@ -1,15 +1,15 @@
-<header x-data="{ open: false, scrolled: false, servicesOpen: false, mobileServicesOpen: false }"
-        @scroll.window="scrolled = window.scrollY > 8"
+<header x-data="{ open: false, servicesOpen: false, mobileServicesOpen: false }"
         @click.outside="servicesOpen = false"
-        class="sticky top-0 z-40 border-b border-line/60 backdrop-blur-xl bg-[#f6f2ea]/88 transition-all"
-        :class="scrolled ? 'shadow-soft' : ''">
+        class="sticky top-0 z-40 transition-all">
   <nav class="mx-auto max-w-7xl px-5 lg:px-8">
-    <div class="flex h-16 items-center justify-between gap-4">
+    <div class="flex h-20 items-center justify-between gap-4">
       <a href="/" class="flex min-w-0 items-center gap-2.5 group">
-        <span class="grid h-10 w-10 place-items-center rounded-2xl border border-ink/10 bg-panel text-ink font-display font-bold shadow-soft transition-transform group-hover:-translate-y-0.5">P</span>
-        <img src="/static/brand/paseka-seleke-signature.svg"
+        <img src="/static/brand/avatar-wink.svg?v=1"
+             alt=""
+             class="h-14 w-14 shrink-0 rounded-full border border-ink/10 bg-panel object-cover shadow-soft transition-transform group-hover:-translate-y-0.5 sm:h-16 sm:w-16">
+        <img src="/static/brand/paseka-seleke-signature.svg?v=2"
              alt="{{ SITE.name }}"
-             class="h-10 w-auto max-w-[15rem] shrink min-w-0 sm:h-12 sm:max-w-[19rem]">
+             class="h-12 w-auto max-w-[16rem] shrink min-w-0 sm:h-14 sm:max-w-[20rem]">
       </a>
 
       <div class="hidden lg:flex items-center gap-1 rounded-full border border-line/80 bg-panel/80 px-2 py-1 shadow-soft">
@@ -99,7 +99,7 @@
         </div>
 
         <a href="/samples" class="mt-1 block rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'Sample Courses' %}bg-ink text-white{% else %}text-slate2{% endif %}">Sample Courses</a>
-        <a href="/blog" class="mt-1 block rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'Blog' %}bg-ink text-white{% else %}text-slate2{% endif %}">Blog</a>
+        <a href="/blog" class="mt-1 block rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'Articles' %}bg-ink text-white{% else %}text-slate2{% endif %}">Articles</a>
         <a href="/contact" class="mt-1 block rounded-2xl px-3 py-2.5 text-sm font-700 {% if active == 'Contact' %}bg-ink text-white{% else %}text-slate2{% endif %}">Contact</a>
       </div>
     </div>

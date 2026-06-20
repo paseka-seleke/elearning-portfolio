@@ -1,0 +1,45 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Articles{% endblock %}
+{% block content %}
+
+<div class="flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="text-xs font-700 uppercase tracking-[0.2em] text-accent">Articles</p>
+    <h1 class="mt-2 font-display text-3xl font-700 tracking-tight">Articles</h1>
+  </div>
+  <a href="/admin/posts/new" class="rounded-full bg-ink px-5 py-2.5 text-sm font-700 text-white transition-colors hover:bg-ink2">
+    + New article
+  </a>
+</div>
+
+<div class="mt-8 space-y-3">
+  {% for post in posts %}
+  <div class="flex flex-wrap items-center justify-between gap-4 rounded-[1.5rem] border border-line bg-panel/95 px-5 py-4 shadow-soft">
+    <div class="min-w-0">
+      <div class="flex items-center gap-2">
+        {% if post.is_published %}
+        <span class="rounded-full bg-ink/10 px-2.5 py-0.5 text-[11px] font-700 uppercase tracking-wide text-ink">Published</span>
+        {% else %}
+        <span class="rounded-full bg-warm/20 px-2.5 py-0.5 text-[11px] font-700 uppercase tracking-wide text-warm">Draft</span>
+        {% endif %}
+        <span class="text-xs text-slate2">{{ post.published.strftime('%d %b %Y') }}</span>
+        <span class="text-xs text-slate2">·</span>
+        <span class="text-xs text-slate2">{{ post.category }}</span>
+      </div>
+      <h2 class="mt-1 truncate font-display text-base font-700">{{ post.title }}</h2>
+    </div>
+    <div class="flex shrink-0 items-center gap-2">
+      {% if post.is_published %}
+      <a href="/blog/{{ post.slug }}" target="_blank" class="rounded-full border border-line px-4 py-2 text-sm font-600 text-slate2 transition-colors hover:border-accent hover:text-accent">View</a>
+      {% endif %}
+      <a href="/admin/posts/{{ post.id }}/edit" class="rounded-full border border-line px-4 py-2 text-sm font-600 text-ink transition-colors hover:border-accent hover:text-accent">Edit</a>
+      <form method="post" action="/admin/posts/{{ post.id }}/delete" onsubmit="return confirm('Delete this article? This cannot be undone.');">
+        <button type="submit" class="rounded-full border border-line px-4 py-2 text-sm font-600 text-slate2 transition-colors hover:border-accent hover:text-accent">Delete</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <p class="rounded-[1.5rem] border border-line bg-panel/95 px-5 py-8 text-center text-sm text-slate2">No articles yet. Write your first one.</p>
+  {% endfor %}
+</div>
+{% endblock %}

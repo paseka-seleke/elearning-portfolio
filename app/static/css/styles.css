@@ -1,8 +1,8 @@
-/* Small custom layer on top of Tailwind. Most styling is utility based. */
+/* Small custom layer on top of Tailwind. 3D/4D spatial enhancements layered on top. */
 
 [x-cloak] { display: none !important; }
 
-html { scroll-padding-top: 5rem; } /* offset sticky header for anchor links */
+html { scroll-padding-top: 5rem; }
 
 body {
   background:
@@ -19,24 +19,16 @@ body::before {
   background-image:
     repeating-linear-gradient(
       to bottom,
-      rgba(112, 144, 189, 0.18) 0,
-      rgba(112, 144, 189, 0.18) 1px,
+      rgba(112, 144, 189, 0.14) 0,
+      rgba(112, 144, 189, 0.14) 1px,
       transparent 1px,
       transparent 34px
     );
-  opacity: 0.95;
+  opacity: 0.9;
   z-index: -1;
 }
 
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0 auto 0 2rem;
-  width: 2px;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(183, 90, 67, 0.22), rgba(183, 90, 67, 0.1));
-  z-index: -1;
-}
+/* body::after replaced by the JS-driven #scroll-timeline */
 
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
@@ -191,4 +183,256 @@ body::after {
   border: 1px solid rgba(20, 184, 166, 0.2);
   background: linear-gradient(135deg, #0f766e 0%, #14b8a6 56%, #67e8f9 100%);
   transform: rotateY(180deg);
+}
+
+/* ═══════════════════════════════════════════════════════
+   3D / 4D SPATIAL LAYER
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Neural Network Canvas ─────────────────────────── */
+#neural-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure content sits above canvas */
+#neural-canvas ~ * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Enhanced Navigation Glassmorphism ─────────────── */
+header {
+  background: rgba(246, 242, 234, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+  border-bottom: 1px solid rgba(216, 207, 184, 0.5) !important;
+  transition: box-shadow 0.3s ease, background 0.3s ease !important;
+}
+
+header.nav--elevated {
+  background: rgba(246, 242, 234, 0.92) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.6) inset,
+    0 4px 24px rgba(36, 59, 48, 0.08) !important;
+}
+
+/* ── 3D Tilt Cards ────────────────────────────────── */
+[data-tilt] {
+  transform: perspective(1100px) rotateX(0deg) rotateY(0deg);
+  will-change: transform;
+  transform-style: preserve-3d;
+  transition: box-shadow 0.25s ease;
+}
+
+[data-tilt]:hover {
+  box-shadow:
+    0 0 0 1px rgba(183,90,67,0.12),
+    0 24px 60px rgba(36, 59, 48, 0.18);
+}
+
+/* JS-injected shine layer */
+.tilt-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+/* ── 3D Fold-In Reveal ────────────────────────────── */
+.reveal-3d {
+  opacity: 0;
+  transform: perspective(900px) rotateX(-14deg) translateY(28px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+}
+
+.reveal-3d.revealed {
+  opacity: 1;
+  transform: perspective(900px) rotateX(0deg) translateY(0px);
+}
+
+/* ── 4D Scroll Timeline ───────────────────────────── */
+#scroll-timeline {
+  position: fixed;
+  left: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.tl-track {
+  width: 2px;
+  height: 38vh;
+  background: rgba(183, 90, 67, 0.1);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tl-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(
+    180deg,
+    rgba(183, 90, 67, 0.7) 0%,
+    rgba(210, 154, 49, 0.5) 100%
+  );
+  border-radius: 999px;
+  box-shadow: 0 0 6px rgba(183, 90, 67, 0.3);
+  transition: height 0.12s linear;
+}
+
+.tl-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(183, 90, 67, 0.22);
+  border: 1.5px solid rgba(183, 90, 67, 0.35);
+  flex-shrink: 0;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tl-dot.tl-dot-active {
+  background: #B75A43;
+  transform: scale(1.5);
+  box-shadow: 0 0 8px rgba(183, 90, 67, 0.55);
+}
+
+@media (max-width: 1024px) {
+  #scroll-timeline { display: none; }
+}
+
+/* ── Floating Depth Orbs ─────────────────────────── */
+.depth-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: orb-float 14s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes orb-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(18px, -14px) scale(1.06); }
+  66%       { transform: translate(-12px,  9px) scale(0.96); }
+}
+
+/* ── Animated Chart Bars ─────────────────────────── */
+.chart-track .chart-bar {
+  transform-origin: bottom center;
+  transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) var(--bar-delay, 0s);
+}
+
+.chart-track:not(.chart-animated) .chart-bar {
+  transform: scaleY(0);
+}
+
+/* ── Section Hero Canvas Host ────────────────────── */
+.hero-canvas-host {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Glowing CTA Pulse ───────────────────────────── */
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(183,90,67,0.35); }
+  70%  { box-shadow: 0 0 0 10px rgba(183,90,67,0); }
+  100% { box-shadow: 0 0 0 0 rgba(183,90,67,0); }
+}
+
+.cta-pulse {
+  animation: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── 3D Flip Card Enhancement ────────────────────── */
+.flip-card-inner {
+  transition: transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.flip-face {
+  box-shadow:
+    0 1px 2px rgba(10,37,64,0.04),
+    0 12px 32px rgba(10,37,64,0.08),
+    0 0 0 1px rgba(255,255,255,0.5) inset;
+}
+
+/* ── Depth Layer on Stat Cards ───────────────────── */
+.stat-card-3d {
+  background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(244,238,220,0.6) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@media (max-width: 640px) {
+  body::after { left: 0.75rem; }
+}
+
+/* ── Drag-and-drop: matching + sequencing knowledge checks ──── */
+[data-matching-item], [data-sequencing-item] {
+  transition: box-shadow 0.15s ease, opacity 0.2s ease;
+}
+
+[data-matching-item].is-dragging,
+[data-sequencing-item].is-dragging {
+  box-shadow: 0 16px 32px rgba(36, 59, 48, 0.18);
+  opacity: 0.92;
+  z-index: 20;
+  position: relative;
+}
+
+[data-drop-target].drop-target-active {
+  border-color: #B75A43;
+  background: rgba(183, 90, 67, 0.06);
+}
+
+[data-sequencing-item].sequencing-target {
+  border-color: #B75A43;
+  box-shadow: 0 0 0 2px rgba(183, 90, 67, 0.18);
+}
+
+.matching-item-placed {
+  opacity: 0.45;
+}
+
+/* Blog post "manuscript" theme block: a warm parchment card with the quill
+   and scroll artwork tucked into the corner as a low opacity watermark, not a
+   stretched photo, so it stays soft and out of the way of the article text. */
+.blog-parchment {
+  position: relative;
+  background: linear-gradient(165deg, #FFFDF7 0%, #FBF3DF 55%, #F1E4C5 100%);
+}
+
+.blog-parchment::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/static/brand/blog-quill.jpg");
+  background-size: 270px auto;
+  background-repeat: no-repeat;
+  background-position: top right -2rem;
+  opacity: 0.14;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.blog-parchment-content {
+  position: relative;
 }

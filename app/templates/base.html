@@ -3,19 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}{{ SITE.name }}{% endblock %} | {{ SITE.name }}</title>
-  <meta name="description" content="{{ SITE.tagline }}. Instructional design, LMS, virtual training, and AI powered learning.">
+
+  {# ── SEO / GEO meta. `meta` is built per route in app/seo.py; sensible
+     fallbacks keep things valid if a page forgets to pass it. ── #}
+  {%- set m = meta if (meta is defined and meta) else None -%}
+  <title>{% if m %}{{ m.title }}{% else %}{% block title %}{{ SITE.name }}{% endblock %}{% endif %}</title>
+  <meta name="description" content="{{ m.description if m else SITE.description }}">
+  {% if m and m.keywords %}<meta name="keywords" content="{{ m.keywords }}">{% endif %}
+  <meta name="author" content="{{ m.author if m else 'Paseka Seleke' }}">
+  <meta name="robots" content="{{ m.robots if m else 'index, follow' }}">
+  {% if m %}<link rel="canonical" href="{{ m.canonical }}">{% endif %}
+  <meta name="theme-color" content="#243B30">
+
   <link rel="icon" type="image/svg+xml" href="/static/brand/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="/static/brand/favicon-32.png">
   <link rel="icon" type="image/png" sizes="180x180" href="/static/brand/favicon-180.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/static/brand/apple-touch-icon.png">
 
-  <!-- Fonts -->
+  {% if m %}
+  <!-- Open Graph (social + link previews) -->
+  <meta property="og:type" content="{{ m.type }}">
+  <meta property="og:site_name" content="{{ m.site_name }}">
+  <meta property="og:locale" content="{{ m.locale }}">
+  <meta property="og:title" content="{{ m.title }}">
+  <meta property="og:description" content="{{ m.description }}">
+  <meta property="og:url" content="{{ m.canonical }}">
+  <meta property="og:image" content="{{ m.image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ m.site_name }}">
+  {% if m.published %}<meta property="article:published_time" content="{{ m.published }}">{% endif %}
+  {% if m.modified %}<meta property="article:modified_time" content="{{ m.modified }}">{% endif %}
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ m.title }}">
+  <meta name="twitter:description" content="{{ m.description }}">
+  <meta name="twitter:image" content="{{ m.image }}">
+  {% endif %}
+
+  {% if jsonld is defined and jsonld %}
+  <!-- Structured data (Schema.org JSON-LD) for search engines and AI answer engines -->
+  {% for block in jsonld %}
+  <script type="application/ld+json">{{ block | tojson }}</script>
+  {% endfor %}
+  {% endif %}
+
+  <!-- Performance: DNS prefetch + preconnect for all CDN origins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+  <link rel="dns-prefetch" href="https://unpkg.com">
+
+  <!-- Fonts: preload the display subset first for LCP -->
+  <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Manrope:wght@400;700&family=Caveat:wght@600&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Tailwind Play CDN (zero build step for development) -->
+  <!-- Tailwind Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -46,8 +90,9 @@
     };
   </script>
 
-  <!-- HTMX for backend driven interactivity, Alpine for small UI state -->
-  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <!-- HTMX: defer preserves DOM-ready execution order (fixes hx-* processing) -->
+  <script defer src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <!-- Alpine: deferred after HTMX so execution order is correct -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <link rel="stylesheet" href="/static/css/styles.css">
@@ -56,12 +101,33 @@
 
   {% include "components/nav.html" %}
 
+  <!-- 4D Scroll Timeline — the "time axis" of the spatial journey -->
+  <div id="scroll-timeline" aria-hidden="true">
+    <div class="tl-track"><div class="tl-fill"></div></div>
+    <!-- Dots are injected by JS to match section[id] count -->
+  </div>
+
   <main id="main">
     {% block content %}{% endblock %}
   </main>
 
   {% include "components/footer.html" %}
 
-  <script src="/static/js/main.js"></script>
+  <!-- Deferred: non-blocking progressive enhancement -->
+  <script defer src="/static/js/main.js"></script>
+
+  <!-- Inject timeline dots matching section[id] count -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var tl = document.getElementById('scroll-timeline');
+      if (!tl) return;
+      var sections = document.querySelectorAll('section[id]');
+      sections.forEach(function () {
+        var d = document.createElement('div');
+        d.className = 'tl-dot';
+        tl.appendChild(d);
+      });
+    });
+  </script>
 </body>
 </html>

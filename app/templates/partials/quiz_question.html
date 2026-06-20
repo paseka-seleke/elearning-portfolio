@@ -1,8 +1,160 @@
-{# A single unanswered question. Each option posts the choice to the backend,
-   which returns the scored result (partials/quiz_result.html) to replace it. #}
+{# A single unanswered knowledge-check item. Format is controlled by q.qtype:
+   pick         - classic choose-the-best-answer (default)
+   scenario     - same mechanics as pick, narrative framing
+   trilemma     - same mechanics as pick, 3-pill True/False/It-depends layout
+   multi_select - select-all-that-apply, explicit submit
+   fill_blank   - free-text answer, explicit submit
+   matching     - drag-and-drop pairing + dropdown fallback, explicit submit
+   sequencing   - drag-to-reorder + up/down-button fallback, explicit submit
+   All variants end in an HTMX POST that swaps this whole div with the scored
+   partials/quiz_result.html fragment (hx-swap="outerHTML"). #}
 {% set question_dom_id = 'q-' ~ code ~ '-' ~ q.id %}
+{% set qnum = loop.index if loop is defined else q.order + 1 %}
+
+{% if q.qtype == 'multi_select' %}
+<div id="{{ question_dom_id }}" class="rounded-2xl border border-line bg-white p-6" x-data="{ picked: [] }">
+  <p class="font-600">{{ qnum }}. {{ q.prompt }}</p>
+  <p class="mt-1 text-xs font-600 uppercase tracking-[0.14em] text-slate2">Select all that apply</p>
+  <div class="mt-4 space-y-2.5">
+    {% for opt in q.options %}
+    <label class="flex items-center gap-3 rounded-xl border px-4 py-3 text-sm cursor-pointer transition-colors"
+           :class="picked.includes({{ loop.index0 }}) ? 'border-accent bg-accent/5' : 'border-line hover:border-accent/50 hover:bg-accent/5'">
+      <input type="checkbox" class="h-4 w-4 shrink-0 accent-accent"
+             @change="$event.target.checked ? picked.push({{ loop.index0 }}) : picked = picked.filter(i => i !== {{ loop.index0 }})">
+      <span>{{ opt }}</span>
+    </label>
+    {% endfor %}
+  </div>
+  <input type="hidden" id="{{ question_dom_id }}-choices" name="choices" :value="JSON.stringify(picked)">
+  <button type="button"
+          hx-post="/samples/{{ course.slug }}/answer/{{ q.id }}"
+          hx-include="#{{ question_dom_id }}-choices, #course-locale"
+          hx-target="#{{ question_dom_id }}"
+          hx-swap="outerHTML"
+          :disabled="picked.length === 0"
+          :class="picked.length === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-ink2'"
+          class="mt-4 rounded-xl bg-ink px-5 py-2.5 text-sm font-700 text-white transition-colors">
+    Submit answer
+  </button>
+</div>
+
+{% elif q.qtype == 'fill_blank' %}
+<div id="{{ question_dom_id }}" class="rounded-2xl border border-line bg-white p-6" x-data="{ answer: '' }">
+  <p class="font-600">{{ qnum }}. {{ q.prompt }}</p>
+  <p class="mt-1 text-xs font-600 uppercase tracking-[0.14em] text-slate2">Type your answer</p>
+  <input type="text" x-model="answer" id="{{ question_dom_id }}-text" name="text_answer"
+         placeholder="Your answer"
+         class="mt-4 w-full rounded-xl border border-line px-4 py-3 text-sm focus:border-accent focus:outline-none">
+  <button type="button"
+          hx-post="/samples/{{ course.slug }}/answer/{{ q.id }}"
+          hx-include="#{{ question_dom_id }}-text, #course-locale"
+          hx-target="#{{ question_dom_id }}"
+          hx-swap="outerHTML"
+          :disabled="answer.trim() === ''"
+          :class="answer.trim() === '' ? 'opacity-40 cursor-not-allowed' : 'hover:bg-ink2'"
+          class="mt-4 rounded-xl bg-ink px-5 py-2.5 text-sm font-700 text-white transition-colors">
+    Submit answer
+  </button>
+</div>
+
+{% elif q.qtype == 'matching' %}
+<div id="{{ question_dom_id }}" class="rounded-2xl border border-line bg-white p-6" data-matching>
+  <p class="font-600">{{ qnum }}. {{ q.prompt }}</p>
+  <p class="mt-1 text-xs text-slate2">Drag each item on the right onto its match on the left, or choose it from the dropdown.</p>
+
+  <div class="mt-5 grid gap-6 sm:grid-cols-2">
+    <div class="space-y-3" data-matching-slots>
+      {% for left in q.left_items %}
+      <div class="rounded-xl border border-line p-3" data-drop-target data-slot-index="{{ loop.index0 }}">
+        <div class="text-sm font-600">{{ left }}</div>
+        <select class="mt-2 w-full rounded-lg border border-dashed border-line bg-mist/60 px-2 py-2 text-xs focus:border-accent focus:outline-none"
+                data-slot-select aria-label="Choose the match for {{ left }}">
+          <option value="">— choose or drag here —</option>
+          {% for right in q.display_right_items %}
+          <option value="{{ loop.index0 }}">{{ right }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="space-y-3" data-matching-bank>
+      {% for right in q.display_right_items %}
+      <div class="cursor-grab touch-none select-none rounded-xl border border-line bg-panel px-4 py-3 text-sm transition-shadow"
+           data-matching-item data-item-index="{{ loop.index0 }}">
+        <span class="mr-2 text-slate2" aria-hidden="true">⠿</span>{{ right }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <input type="hidden" id="{{ question_dom_id }}-pairing" name="pairing" value="{}">
+  <button type="button"
+          hx-post="/samples/{{ course.slug }}/match"
+          hx-include="#{{ question_dom_id }}-pairing, #course-locale"
+          hx-target="#{{ question_dom_id }}"
+          hx-swap="outerHTML"
+          class="mt-5 rounded-xl bg-ink px-5 py-2.5 text-sm font-700 text-white transition-colors hover:bg-ink2">
+    Check my answer
+  </button>
+</div>
+
+{% elif q.qtype == 'sequencing' %}
+<div id="{{ question_dom_id }}" class="rounded-2xl border border-line bg-white p-6" data-sequencing>
+  <p class="font-600">{{ qnum }}. {{ q.prompt }}</p>
+  <p class="mt-1 text-xs text-slate2">Drag to reorder, or use the up/down buttons.</p>
+
+  <ol class="mt-5 space-y-2" data-sequencing-list>
+    {% for step in q.display_steps %}
+    <li class="flex items-center gap-3 rounded-xl border border-line bg-panel px-4 py-3 text-sm touch-none"
+        data-sequencing-item data-step-text="{{ step }}">
+      <span class="cursor-grab text-slate2" aria-hidden="true">⠿</span>
+      <span class="flex-1">{{ step }}</span>
+      <div class="flex shrink-0 gap-1">
+        <button type="button" class="rounded-lg border border-line px-2 py-1 text-xs hover:border-accent hover:text-accent" data-move-up aria-label="Move up">↑</button>
+        <button type="button" class="rounded-lg border border-line px-2 py-1 text-xs hover:border-accent hover:text-accent" data-move-down aria-label="Move down">↓</button>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+
+  <input type="hidden" id="{{ question_dom_id }}-order" name="order" value="[]">
+  <button type="button"
+          hx-post="/samples/{{ course.slug }}/sequence"
+          hx-include="#{{ question_dom_id }}-order, #course-locale"
+          hx-target="#{{ question_dom_id }}"
+          hx-swap="outerHTML"
+          class="mt-5 rounded-xl bg-ink px-5 py-2.5 text-sm font-700 text-white transition-colors hover:bg-ink2">
+    Check my answer
+  </button>
+</div>
+
+{% else %}
 <div id="{{ question_dom_id }}" class="rounded-2xl border border-line bg-white p-6">
-  <p class="font-600">{{ loop.index if loop is defined else q.order + 1 }}. {{ q.prompt }}</p>
+  {% if q.qtype == 'scenario' %}
+  <div class="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 flex gap-3">
+    <svg class="mt-0.5 shrink-0 text-indigo-500" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    <p class="text-sm font-600 text-ink/90 leading-relaxed">{{ qnum }}. {{ q.prompt }}</p>
+  </div>
+  {% else %}
+  <p class="font-600">{{ qnum }}. {{ q.prompt }}</p>
+  {% endif %}
+
+  {% if q.qtype == 'trilemma' %}
+  <div class="mt-5 grid grid-cols-3 gap-3">
+    {% for opt in q.options %}
+    <button
+        hx-post="/samples/{{ course.slug }}/answer/{{ q.id }}"
+        hx-vals='{"choice": {{ loop.index0 }} }'
+        hx-include="#course-locale"
+        hx-target="#{{ question_dom_id }}"
+        hx-swap="outerHTML"
+        class="rounded-xl border border-line px-3 py-4 text-center text-sm font-600 transition-colors hover:border-accent hover:bg-accent/5">
+      {{ opt }}
+    </button>
+    {% endfor %}
+  </div>
+  {% else %}
   <div class="mt-4 space-y-2.5">
     {% for opt in q.options %}
     <button
@@ -16,4 +168,6 @@
     </button>
     {% endfor %}
   </div>
+  {% endif %}
 </div>
+{% endif %}

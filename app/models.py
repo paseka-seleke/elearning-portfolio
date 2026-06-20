@@ -50,6 +50,10 @@ class BlogPost(SQLModel, table=True):
     excerpt: str
     body: str                 # simple paragraphs separated by blank lines
     published: date = Field(default_factory=date.today)
+    is_published: bool = Field(default=False)  # draft until set True from /admin
+    image_path: Optional[str] = None       # cover image, under /static/uploads/blog/
+    attachment_path: Optional[str] = None  # downloadable PDF/document, same folder
+    attachment_name: Optional[str] = None  # original filename, shown on the download link
 
 
 class Lead(SQLModel, table=True):

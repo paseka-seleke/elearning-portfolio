@@ -1,6 +1,8 @@
-{# Returned by the backend after a question is answered. Highlights the chosen
-   option and the correct one, then shows the explanation. Dispatches an
-   'answered' event so the page progress bar and final score can update. #}
+{# Returned by the backend after a question is answered/checked. The header
+   (correct/not-quite badge), the 'answered' event dispatch, and the
+   explanation footer are shared across every qtype -- this is what makes the
+   progress bar / final score work identically regardless of format. Only the
+   middle "what did you answer" section branches on qtype. #}
 <div id="{{ target_id }}"
      class="rounded-2xl border p-6 {{ 'border-accent/40 bg-accent/5' if correct else 'border-rose-200 bg-rose-50' }}"
      x-init="$dispatch('answered', { correct: {{ 'true' if correct else 'false' }} })">
@@ -13,6 +15,83 @@
     </span>
   </div>
 
+  {% if qtype == 'multi_select' %}
+  <div class="mt-4 space-y-2.5">
+    {% for opt in localized_question.options %}
+      {% set idx = loop.index0 %}
+      {% set was_correct_choice = idx in correct_set %}
+      {% set was_picked = idx in submitted_set %}
+      {% if was_correct_choice and was_picked %}
+        <div class="flex items-center gap-2.5 rounded-xl border border-accent/40 bg-white px-4 py-3 text-sm">
+          <svg class="text-accent" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          <span class="font-600">{{ opt }}</span>
+        </div>
+      {% elif was_picked and not was_correct_choice %}
+        <div class="flex items-center gap-2.5 rounded-xl border border-rose-200 bg-white px-4 py-3 text-sm text-slate2">
+          <svg class="text-rose-500" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg>
+          <span>{{ opt }}</span>
+        </div>
+      {% elif was_correct_choice and not was_picked %}
+        <div class="flex items-center gap-2.5 rounded-xl border border-amber-300 bg-white px-4 py-3 text-sm text-slate2">
+          <svg class="text-warm" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+          <span>{{ opt }} <span class="text-[11px] font-700 uppercase tracking-[0.1em] text-warm">missed</span></span>
+        </div>
+      {% else %}
+        <div class="rounded-xl border border-line px-4 py-3 text-sm text-slate2/70">{{ opt }}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% elif qtype == 'fill_blank' %}
+  <div class="mt-4 space-y-2.5">
+    <div class="rounded-xl border px-4 py-3 text-sm {{ 'border-accent/40 bg-white' if correct else 'border-rose-200 bg-white' }}">
+      <span class="text-[11px] font-700 uppercase tracking-[0.14em] text-slate2">Your answer</span>
+      <p class="mt-1 font-600">{{ text_answer or "—" }}</p>
+    </div>
+    <div class="rounded-xl border border-line bg-white px-4 py-3 text-sm">
+      <span class="text-[11px] font-700 uppercase tracking-[0.14em] text-slate2">Accepted answer(s)</span>
+      <p class="mt-1 font-600">{{ accepted_display }}</p>
+    </div>
+  </div>
+
+  {% elif qtype == 'matching' %}
+  <div class="mt-4 space-y-2.5">
+    {% for pair in pairs_feedback %}
+      {% if pair.ok %}
+        <div class="flex items-center gap-2.5 rounded-xl border border-accent/40 bg-white px-4 py-3 text-sm">
+          <svg class="text-accent shrink-0" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          <span><span class="font-600">{{ pair.left }}</span> — {{ pair.right }}</span>
+        </div>
+      {% else %}
+        <div class="flex items-center gap-2.5 rounded-xl border border-rose-200 bg-white px-4 py-3 text-sm text-slate2">
+          <svg class="text-rose-500 shrink-0" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg>
+          <span><span class="font-600 text-ink">{{ pair.left }}</span> — correct match: {{ pair.right }}</span>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% elif qtype == 'sequencing' %}
+  <div class="mt-4 grid gap-4 sm:grid-cols-2">
+    <div class="rounded-xl border border-line bg-white p-4">
+      <span class="text-[11px] font-700 uppercase tracking-[0.14em] text-slate2">Your order</span>
+      <ol class="mt-2 space-y-1.5 text-sm">
+        {% for step in submitted_order %}
+        <li class="flex gap-2"><span class="font-700 text-slate2">{{ loop.index }}.</span> {{ step }}</li>
+        {% endfor %}
+      </ol>
+    </div>
+    <div class="rounded-xl border border-accent/30 bg-white p-4">
+      <span class="text-[11px] font-700 uppercase tracking-[0.14em] text-accent">Correct order</span>
+      <ol class="mt-2 space-y-1.5 text-sm">
+        {% for step in correct_order %}
+        <li class="flex gap-2"><span class="font-700 text-accent">{{ loop.index }}.</span> {{ step }}</li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+
+  {% else %}
   <div class="mt-4 space-y-2.5">
     {% for opt in localized_question.options %}
       {% set idx = loop.index0 %}
@@ -31,6 +110,7 @@
       {% endif %}
     {% endfor %}
   </div>
+  {% endif %}
 
   <p class="mt-4 rounded-xl bg-white/60 px-4 py-3 text-sm text-ink/80">
     <span class="font-600">{{ ui.why }} </span>{{ localized_question.explanation }}

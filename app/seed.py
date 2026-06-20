@@ -56,52 +56,54 @@ SAMPLES = [
         ),
         "questions": [
             {
-                "prompt": "Which option best describes artificial intelligence for a non-technical audience?",
-                "a": "Software that follows fixed rules written by a developer for every case",
-                "b": "Systems that learn patterns from data to make predictions or decisions",
-                "c": "Any computer program that connects to the internet",
-                "correct": 1,
-                "explanation": "AI systems learn patterns from data rather than relying only on fixed, hand-written rules. That distinction — learning vs. following explicit instructions — is the key idea.",
+                # multi_select: "correct" is a 3-bit mask (bit i = option i is
+                # correct), not a single index. Bit0=1, Bit1=2, Bit2=4.
+                "prompt": "Which of these statements about artificial intelligence are accurate? Select all that apply.",
+                "a": "AI systems learn patterns from data to make predictions or decisions",
+                "b": "AI always requires an internet connection to function",
+                "c": "AI improves as it is exposed to more relevant examples",
+                "correct": 5,  # a + c
+                "explanation": "AI learns from data and improves with more relevant examples; it does not inherently depend on an internet connection to function.",
             },
             {
-                "prompt": "A department wants to reduce time spent answering repeat citizen questions. Which is the most fitting first AI use case?",
-                "a": "A chatbot trained on the department's published FAQs and policies",
-                "b": "An autonomous system that approves grant applications without review",
-                "c": "Replacing the entire records database overnight",
-                "correct": 0,
-                "explanation": "A scoped assistant grounded in known, published content is low-risk and high-value. High-stakes decisions — like grant approvals — should keep a human in the loop.",
+                "prompt": "A department wants to reduce time spent answering repeat citizen questions. Which of these are reasonable first AI use cases? Select all that apply.",
+                "a": "An autonomous system that approves grant applications without any human review",
+                "b": "A chatbot trained on the department's published FAQs and policies",
+                "c": "A search assistant that points citizens to the right published policy page",
+                "correct": 6,  # b + c
+                "explanation": "A scoped assistant grounded in known, published content is low-risk and high-value. Approving grants with no human review stays a high-stakes decision to avoid as a first project.",
             },
             {
-                "prompt": "Which is a genuine risk to plan for before adopting AI in public services?",
-                "a": "The technology is always too expensive to pilot",
-                "b": "Bias in training data can lead to unfair outcomes for citizens",
-                "c": "AI can never be explained to the public",
-                "correct": 1,
-                "explanation": "Data bias is a real and manageable risk, addressed through good data practices, testing, and oversight. Cost and explainability are negotiable — bias in decisions affecting citizens is not.",
+                "prompt": "Which of these are genuine risks to plan for before adopting AI in public services? Select all that apply.",
+                "a": "Bias in training data can lead to unfair outcomes for citizens",
+                "b": "Poor data quality can produce unreliable or misleading outputs",
+                "c": "AI is always too expensive for any public sector team to pilot",
+                "correct": 3,  # a + b
+                "explanation": "Data bias and poor data quality are real, manageable risks addressed through good practice, testing, and oversight. Cost is not a universal blocker — many pilots stay affordable at small scale.",
             },
             {
-                "prompt": "A vendor proposes an AI tool that scores welfare applications but cannot explain why any individual received their score. What should concern you most?",
-                "a": "The tool might slow processing times compared to paper forms",
-                "b": "Unexplained scores make decisions hard to challenge or audit, which is a governance problem in public services",
-                "c": "Citizens will always prefer speaking to a person, making the tool pointless",
-                "correct": 1,
-                "explanation": "Explainability is a governance requirement, not a nice-to-have. When an AI-influenced decision affects a citizen's rights or entitlements, there must be a defensible reason that can be communicated and reviewed.",
+                "prompt": "Which of these statements about explainability requirements in public sector AI is correct?",
+                "a": "A citizen affected by a decision should be able to get a defensible reason for it",
+                "b": "Explainability is optional as long as the system is statistically accurate",
+                "c": "Explainability requirements only apply to decisions made entirely by humans",
+                "correct": 1,  # a only
+                "explanation": "Explainability is a governance requirement whenever a decision affects a citizen's rights, whether made by a human or influenced by AI — statistical accuracy alone is not enough.",
             },
             {
-                "prompt": "What should come first when planning a public sector AI initiative?",
-                "a": "Selecting the AI vendor with the best marketing material",
-                "b": "Writing a clear problem statement tied to a measurable outcome",
-                "c": "Building a large data warehouse to prepare for any future AI need",
-                "correct": 1,
-                "explanation": "Start with the problem, not the technology. A precise problem statement — with a measurable definition of success — is what keeps a pilot honest and scalable.",
+                "prompt": "What should happen before scaling an AI pilot in government? Select all that apply.",
+                "a": "Select the vendor with the most polished marketing material",
+                "b": "Define a clear problem statement tied to a measurable outcome",
+                "c": "Audit pilot results for errors and bias",
+                "correct": 6,  # b + c
+                "explanation": "A well-defined problem and a rigorous audit of results are what make scaling responsible. Vendor marketing polish is not a reliable basis for that decision.",
             },
             {
-                "prompt": "Which characteristic best describes 'narrow AI' as it exists in public services today?",
-                "a": "AI that can reason and learn across many domains just like a person",
-                "b": "AI designed to do one well-defined task, such as classifying documents or flagging anomalies",
-                "c": "AI that only works when connected to a central government mainframe",
-                "correct": 1,
-                "explanation": "All AI in current use is narrow — it does one thing well. General AI capable of broad human-like reasoning does not yet exist outside research. Understanding this prevents over-promising to stakeholders.",
+                "prompt": "Which of these statements correctly describe 'narrow AI' as used in public services today? Select all that apply.",
+                "a": "It is designed to do one well-defined task, such as classifying documents",
+                "b": "It can reason and learn across many unrelated domains like a person",
+                "c": "It is the type of AI used in virtually all current public sector deployments",
+                "correct": 5,  # a + c
+                "explanation": "Narrow AI does one thing well and accounts for virtually all AI in use today. Reasoning across many domains like a person describes general AI, which does not yet exist in practice.",
             },
         ],
     },
@@ -146,39 +148,41 @@ SAMPLES = [
                 "b": "Do not click — check the sender and go to the official site directly",
                 "c": "Forward it to all colleagues to warn them",
                 "correct": 1,
-                "explanation": "Urgency plus a link is the classic phishing combination. Verify through the official channel — never through the link in the message. Forwarding spreads the risk to colleagues.",
+                "explanation": "Urgency plus a link is the classic phishing combination. Verify through the official channel typed directly into your browser, or a number you already know — never through the link in the message.",
             },
             {
-                "prompt": "Which password practice is strongest?",
-                "a": "One memorable password reused across all your accounts",
-                "b": "A long, unique passphrase per account stored in a password manager",
-                "c": "Your name and birth year so it is easy to recall",
-                "correct": 1,
-                "explanation": "Unique, long passwords managed by a password manager limit the blast radius when any single service is breached. Reuse turns one breach into many.",
+                # fill_blank repurposes "a" as a "|"-separated accepted-answer
+                # list; "b"/"c" stay blank for this qtype.
+                "prompt": "The deceptive message that impersonates a trustworthy source to trick someone into revealing credentials or installing malware is called ______.",
+                "a": "phishing|social engineering",
+                "b": "",
+                "c": "",
+                "correct": 0,
+                "explanation": "Phishing impersonates a trusted sender to manipulate someone into revealing credentials, clicking a malicious link, or installing malware.",
             },
             {
-                "prompt": "What is the main benefit of enabling multi-factor authentication (MFA)?",
-                "a": "It makes your password shorter because you no longer need a complex one",
-                "b": "An attacker who obtains your password still cannot access your account without the second factor",
-                "c": "It allows you to log in without a password entirely",
+                "prompt": "'Summer2024!' is a strong password because it contains an uppercase letter, a number, and a symbol.",
+                "a": "True — it meets all standard complexity requirements",
+                "b": "False — predictable patterns like word+year+symbol are among the first an attacker tries; length and genuine randomness beat complexity rules",
+                "c": "It depends on how often you change it",
                 "correct": 1,
+                "explanation": "Complexity rules (uppercase, number, symbol) don't stop a predictable pattern like word+year+symbol from being among the first things an attacker tries. A long, random passphrase is far stronger.",
+            },
+            {
+                "prompt": "The extra login security layer that requires a second proof of identity beyond your password — such as a code from an app — is called ______.",
+                "a": "multi-factor authentication|mfa|two-factor authentication|2fa",
+                "b": "",
+                "c": "",
+                "correct": 0,
                 "explanation": "MFA adds a second layer of proof. Even a stolen or guessed password alone is not enough to get in, which dramatically reduces the impact of credential theft.",
             },
             {
-                "prompt": "You click a link in an email and a moment later feel uneasy — the page looked odd. What should you do?",
-                "a": "Say nothing and hope nothing comes of it",
-                "b": "Report it to your IT or security team immediately, even if you are not certain",
-                "c": "Change your password in three days if nothing bad has happened by then",
-                "correct": 1,
-                "explanation": "Speed matters more than certainty. Early reports give the security team time to contain damage. Waiting turns a small incident into a big one.",
-            },
-            {
                 "prompt": "A caller claims to be from IT support and asks for your password to fix an urgent access issue. What do you do?",
-                "a": "Provide it — IT support should have access anyway",
-                "b": "Decline and verify the caller's identity through the official IT service desk number",
-                "c": "Give a temporary version of your password and change it afterward",
+                "a": "Provide it — IT support should have access anyway and urgency sounds legitimate",
+                "b": "Decline, explain that legitimate IT staff never need your password, and call back using the official service desk number you already know",
+                "c": "Give a temporary version of your password and change it as soon as the call ends",
                 "correct": 1,
-                "explanation": "Legitimate IT staff never need your password. This is a textbook pretexting attack. Verify through a known, official channel before sharing any information.",
+                "explanation": "Legitimate IT staff never need your password. This is a textbook pretexting attack — verify the caller's identity through a known, official channel before sharing anything.",
             },
         ],
     },
@@ -218,14 +222,6 @@ SAMPLES = [
         ),
         "questions": [
             {
-                "prompt": "Which statement shows whether the organisation made a profit over a period?",
-                "a": "The balance sheet",
-                "b": "The income statement (profit and loss)",
-                "c": "The asset register",
-                "correct": 1,
-                "explanation": "The income statement reports revenue and expenses over a period to arrive at a profit or loss figure. The balance sheet is a point-in-time snapshot of assets and liabilities.",
-            },
-            {
                 "prompt": "Your division's revenue grew 15% this year but net profit fell. Where on the income statement would you look first to understand why?",
                 "a": "The asset column of the balance sheet",
                 "b": "The cost lines between revenue and net profit — direct costs and operating expenses",
@@ -240,14 +236,6 @@ SAMPLES = [
                 "c": "Supplier invoices are not recorded until they are paid",
                 "correct": 1,
                 "explanation": "Profit is an accrual concept — it records activity when it happens. Cash is when money actually moves. A profitable business can run out of cash if clients pay slowly while suppliers must be paid quickly.",
-            },
-            {
-                "prompt": "The balance sheet shows total assets of $500,000 and total liabilities of $320,000. What is the organisation's net asset (equity) position?",
-                "a": "$820,000",
-                "b": "$180,000",
-                "c": "$320,000",
-                "correct": 1,
-                "explanation": "Net assets = Assets minus Liabilities. $500,000 − $320,000 = $180,000. This is the residual value owned by the organisation after all obligations are settled.",
             },
         ],
     },
@@ -294,22 +282,6 @@ SAMPLES = [
                 "explanation": "Clustering just under a control limit is a known red flag worth investigating — not proof of wrongdoing on its own. Document the pattern, pull supporting documentation, and assess intent before drawing conclusions.",
             },
             {
-                "prompt": "What does Benford's Law predict about a naturally occurring numeric dataset such as a set of invoiced amounts?",
-                "a": "All digits 1 through 9 should appear as the first digit with equal frequency",
-                "b": "Smaller digits (1, 2, 3) should appear as the first digit more often than larger digits",
-                "c": "The majority of amounts should be round numbers ending in zero",
-                "correct": 1,
-                "explanation": "Benford's Law predicts that in many naturally occurring datasets, digit 1 appears as the leading digit about 30% of the time, digit 2 about 18%, and so on. Significant deviation from this distribution is a flag for further review.",
-            },
-            {
-                "prompt": "You identify a significant anomaly in the data. What is the correct next step in a professional analytics workflow?",
-                "a": "Report it as confirmed fraud to management immediately",
-                "b": "Document the finding as a question requiring follow-up investigation, not a conclusion",
-                "c": "Delete the anomalous records and rerun the analysis on clean data",
-                "correct": 1,
-                "explanation": "An anomaly is a flag, not evidence. Document it precisely, identify what you would need to rule out, and investigate systematically before characterising the finding. Escalating prematurely damages credibility.",
-            },
-            {
                 "prompt": "You need to show a CFO that expense transactions cluster unusually around the $5,000 approval threshold. Which visualisation works best?",
                 "a": "A table listing every transaction above $4,500 with vendor names",
                 "b": "A bar chart showing transaction count by $200 amount band, with the threshold marked",
@@ -324,6 +296,7 @@ SAMPLES = [
 
 SAMPLE_EXTRAS = {
     "ai-fundamentals-policy-makers": {
+        "question_types": ["multi_select"] * 6,
         "preview": {
             "kicker": "AI readiness brief",
             "headline": "From concept to policy checklist",
@@ -424,6 +397,7 @@ SAMPLE_EXTRAS = {
         },
     },
     "cybersecurity-awareness-staff": {
+        "question_types": ["scenario", "fill_blank", "trilemma", "fill_blank", "scenario"],
         "preview": {
             "kicker": "Threat response lab",
             "headline": "Spot, pause, verify, report",
@@ -524,6 +498,16 @@ SAMPLE_EXTRAS = {
         },
     },
     "financial-reporting-essentials": {
+        "question_types": ["scenario", "scenario"],
+        "matching_activity": {
+            "prompt": "Match each financial statement to what it tells you.",
+            "explanation": "Each statement answers a different question: the income statement asks 'did we make money?', the balance sheet asks 'what do we own and owe?', and the cash flow statement asks 'do we have the cash to operate?' Reading them together is what reveals the full picture — including when a profitable business is still short on cash.",
+            "pairs": [
+                {"left": "Income statement (P&L)", "right": "Shows whether the organisation made a profit or loss over a period"},
+                {"left": "Balance sheet", "right": "Shows what the organisation owns and owes at a single point in time"},
+                {"left": "Cash flow statement", "right": "Shows the actual movement of cash in and out over a period"},
+            ],
+        },
         "preview": {
             "kicker": "Finance made readable",
             "headline": "Read the story behind the statements",
@@ -624,6 +608,12 @@ SAMPLE_EXTRAS = {
         },
     },
     "data-analytics-accountancy": {
+        "question_types": ["scenario", "pick"],
+        "sequencing_activity": {
+            "prompt": "Put the audit analytics workflow steps in the correct order.",
+            "explanation": "Each step builds on the last: you can't profile data you don't understand, test patterns you haven't profiled, or communicate findings you haven't investigated. Skipping a step usually surfaces later as a finding you can't defend.",
+            "steps": ["Understand the data", "Profile the data", "Apply targeted tests", "Investigate exceptions", "Communicate findings"],
+        },
         "preview": {
             "kicker": "Audit analytics studio",
             "headline": "Turn anomaly signals into clear findings",
@@ -753,12 +743,12 @@ LOCALIZED_INTERACTIVE_CONTENT = {
                 "bars": [{"label": "Cadrage", "value": 52}, {"label": "Preparation des donnees", "value": 78}, {"label": "Mise en place du modele", "value": 41}, {"label": "Supervision", "value": 68}],
             },
             "questions": [
-                {"prompt": "Quelle option decrit le mieux l'intelligence artificielle pour un public non technique ?", "a": "Un logiciel qui applique uniquement des regles fixes ecrites a l'avance", "b": "Des systemes qui apprennent a partir des donnees pour faire des predictions ou des decisions", "c": "Tout programme informatique connecte a internet", "explanation": "La difference essentielle est l'apprentissage a partir des donnees plutot que l'execution exclusive de regles explicites."},
-                {"prompt": "Un ministere veut reduire le temps passe a repondre aux questions repetitives des citoyens. Quel premier cas d'usage IA est le plus adapte ?", "a": "Un agent conversationnel entraine sur les FAQ et politiques publiees", "b": "Un systeme autonome qui approuve des subventions sans controle", "c": "Le remplacement complet de la base documentaire en une nuit", "explanation": "Un assistant limite a un contenu public connu est un premier usage prudent et utile. Les decisions sensibles doivent garder une revue humaine."},
-                {"prompt": "Quel risque doit etre planifie avant d'adopter l'IA dans les services publics ?", "a": "La technologie est toujours trop couteuse pour etre testee", "b": "Un biais dans les donnees d'entrainement peut produire des resultats injustes", "c": "L'IA ne peut jamais etre expliquee au public", "explanation": "Le biais des donnees est un risque reel qui doit etre gere par des tests, de bonnes donnees et une supervision adaptee."},
-                {"prompt": "Un fournisseur propose un outil qui note des demandes sociales sans pouvoir expliquer chaque score. Quelle est la principale inquietude ?", "a": "L'outil pourrait etre plus lent que les formulaires papier", "b": "Des scores inexpliques rendent les decisions difficiles a contester ou a auditer", "c": "Les citoyens prefereront toujours parler a une personne", "explanation": "L'explicabilite est une exigence de gouvernance. Une decision publique influencee par l'IA doit pouvoir etre expliquee et revue."},
-                {"prompt": "Quelle etape doit venir en premier lors de la planification d'une initiative IA publique ?", "a": "Choisir le fournisseur au meilleur marketing", "b": "Rediger un probleme clair relie a un resultat mesurable", "c": "Construire un vaste entrepot de donnees pour tout usage futur", "explanation": "Il faut commencer par le probleme et la mesure de succes, pas par la technologie ni par l'infrastructure generique."},
-                {"prompt": "Quelle caracteristique decrit le mieux l'IA specialisee utilisee aujourd'hui dans les services publics ?", "a": "Une IA capable de raisonner dans tous les domaines comme une personne", "b": "Une IA concue pour accomplir une tache bien definie", "c": "Une IA qui ne fonctionne qu'avec un grand systeme central", "explanation": "L'IA actuelle est specialisee : elle execute une tache precise. L'IA generale reste du domaine de la recherche."},
+                {"prompt": "Lesquelles de ces affirmations sur l'intelligence artificielle sont exactes ? Selectionnez toutes les reponses correctes.", "a": "Les systemes d'IA apprennent des motifs a partir de donnees pour faire des predictions ou des decisions", "b": "L'IA a toujours besoin d'une connexion internet pour fonctionner", "c": "L'IA s'ameliore lorsqu'elle est exposee a des exemples pertinents", "explanation": "L'IA apprend a partir de donnees et s'ameliore avec l'exposition a plus d'exemples ; elle ne depend pas systematiquement d'une connexion internet pour fonctionner."},
+                {"prompt": "Un departement veut reduire le temps passe a repondre aux questions repetitives des citoyens. Lesquels de ces cas d'usage sont raisonnables comme premier projet IA ? Selectionnez toutes les reponses correctes.", "a": "Un systeme autonome qui approuve des demandes de subvention sans aucune revue humaine", "b": "Un assistant conversationnel entraine sur les FAQ et politiques publiees du departement", "c": "Un assistant de recherche qui oriente les citoyens vers la bonne page de politique publiee", "explanation": "Un assistant limite a du contenu public connu est a faible risque et utile. Approuver des subventions sans revue humaine reste une decision a haut risque a eviter en premier projet."},
+                {"prompt": "Lesquels de ces elements sont de veritables risques a anticiper avant d'adopter l'IA dans les services publics ? Selectionnez toutes les reponses correctes.", "a": "Un biais dans les donnees d'entrainement peut produire des resultats injustes pour les citoyens", "b": "Une mauvaise qualite des donnees peut produire des resultats peu fiables ou trompeurs", "c": "L'IA est toujours trop couteuse pour qu'un departement public puisse la piloter", "explanation": "Le biais des donnees et la mauvaise qualite des donnees sont des risques reels et gerables. Le cout n'est pas un obstacle systematique : de nombreux pilotes restent abordables a petite echelle."},
+                {"prompt": "Laquelle de ces affirmations sur les exigences d'explicabilite de l'IA publique est correcte ?", "a": "Un citoyen concerne par une decision devrait pouvoir obtenir une raison defendable", "b": "L'explicabilite est facultative tant que le systeme est statistiquement precis", "c": "Les exigences d'explicabilite ne s'appliquent qu'aux decisions prises entierement par des humains", "explanation": "L'explicabilite est une exigence de gouvernance dès qu'une decision affecte les droits d'un citoyen, qu'elle soit prise par un humain ou influencee par l'IA — la precision statistique seule ne suffit pas."},
+                {"prompt": "Que devrait-il se passer avant de faire passer un pilote IA a plus grande echelle ? Selectionnez toutes les reponses correctes.", "a": "Choisir le fournisseur avec le materiel marketing le plus soigne", "b": "Definir un probleme clair relie a un resultat mesurable", "c": "Auditer les resultats du pilote pour detecter erreurs et biais", "explanation": "Un probleme bien defini et un audit rigoureux des resultats sont les conditions d'un passage a l'echelle responsable. Le marketing du fournisseur n'est pas un critere de decision fiable."},
+                {"prompt": "Lesquelles de ces affirmations decrivent correctement l'« IA etroite » utilisee aujourd'hui dans les services publics ? Selectionnez toutes les reponses correctes.", "a": "Elle est concue pour accomplir une tache bien definie, comme classer des documents", "b": "Elle peut raisonner et apprendre dans de nombreux domaines differents comme une personne", "c": "C'est le type d'IA utilise dans la quasi-totalite des deploiements publics actuels", "explanation": "L'IA etroite fait une chose precise tres bien et represente la quasi-totalite de l'IA utilisee aujourd'hui. La capacite a raisonner sur des domaines varies comme un humain decrit l'IA generale, qui n'existe pas encore en pratique."},
             ],
         },
         "pt": {
@@ -788,12 +778,12 @@ LOCALIZED_INTERACTIVE_CONTENT = {
                 "bars": [{"label": "Definicao do problema", "value": 52}, {"label": "Preparacao dos dados", "value": 78}, {"label": "Configuracao do modelo", "value": 41}, {"label": "Supervisao", "value": 68}],
             },
             "questions": [
-                {"prompt": "Qual opcao descreve melhor a inteligencia artificial para um publico nao tecnico?", "a": "Software que segue apenas regras fixas escritas antecipadamente", "b": "Sistemas que aprendem com dados para fazer previsoes ou decisoes", "c": "Qualquer programa ligado a internet", "explanation": "A diferenca central esta em aprender com dados, e nao apenas executar regras explicitas."},
-                {"prompt": "Um departamento quer reduzir o tempo gasto a responder a perguntas repetidas dos cidadaos. Qual e o primeiro caso de uso mais adequado?", "a": "Um chatbot treinado com FAQs e politicas publicadas", "b": "Um sistema autonomo que aprova subvencoes sem revisao", "c": "Substituir toda a base documental de um dia para o outro", "explanation": "Um assistente limitado a conteudo publico conhecido e um bom primeiro uso. Decisoes sensiveis devem manter revisao humana."},
-                {"prompt": "Qual risco precisa de ser planeado antes de adotar IA nos servicos publicos?", "a": "A tecnologia e sempre demasiado cara para testar", "b": "Vies nos dados de treino pode gerar resultados injustos", "c": "A IA nunca pode ser explicada ao publico", "explanation": "O vies dos dados e um risco real e gerivel com testes, boa qualidade de dados e supervisao apropriada."},
-                {"prompt": "Um fornecedor propoe uma ferramenta que atribui pontuacoes a pedidos sociais, mas nao consegue explicar cada pontuacao. Qual e a principal preocupacao?", "a": "A ferramenta pode ser mais lenta do que formularios em papel", "b": "Pontuacoes sem explicacao dificultam contestacao e auditoria", "c": "Os cidadaos preferirao sempre falar com uma pessoa", "explanation": "Explicabilidade e um requisito de governanca. Uma decisao publica influenciada por IA precisa de poder ser explicada e revista."},
-                {"prompt": "O que deve vir primeiro ao planear uma iniciativa publica de IA?", "a": "Escolher o fornecedor com melhor marketing", "b": "Escrever um problema claro ligado a um resultado mensuravel", "c": "Construir um grande armazem de dados para qualquer uso futuro", "explanation": "Comeca-se pelo problema e pela definicao de sucesso, nao pela tecnologia ou por uma infraestrutura generica."},
-                {"prompt": "Que caracteristica descreve melhor a IA estreita usada atualmente nos servicos publicos?", "a": "Uma IA que raciocina em muitos dominios como uma pessoa", "b": "Uma IA desenhada para uma tarefa bem definida", "c": "Uma IA que so funciona ligada a um sistema central", "explanation": "A IA atual e estreita: faz uma tarefa especifica. A IA geral continua fora do uso pratico."},
+                {"prompt": "Quais destas afirmacoes sobre inteligencia artificial sao corretas? Selecione todas as opcoes corretas.", "a": "Os sistemas de IA aprendem padroes a partir de dados para fazer previsoes ou decisoes", "b": "A IA precisa sempre de uma ligacao a internet para funcionar", "c": "A IA melhora quando e exposta a exemplos relevantes", "explanation": "A IA aprende a partir de dados e melhora com a exposicao a mais exemplos; nao depende sistematicamente de uma ligacao a internet para funcionar."},
+                {"prompt": "Um departamento quer reduzir o tempo gasto a responder a perguntas repetidas dos cidadaos. Quais destes casos de uso sao razoaveis como primeiro projeto de IA? Selecione todas as opcoes corretas.", "a": "Um sistema autonomo que aprova pedidos de subsidio sem qualquer revisao humana", "b": "Um chatbot treinado com as FAQs e politicas publicadas do departamento", "c": "Um assistente de pesquisa que encaminha os cidadaos para a pagina de politica correta", "explanation": "Um assistente limitado a conteudo publico conhecido e de baixo risco e util. Aprovar subsidios sem revisao humana continua a ser uma decisao de alto risco a evitar num primeiro projeto."},
+                {"prompt": "Quais destes sao riscos genuinos a considerar antes de adotar IA nos servicos publicos? Selecione todas as opcoes corretas.", "a": "Um vies nos dados de treino pode gerar resultados injustos para os cidadaos", "b": "Uma ma qualidade dos dados pode gerar resultados pouco fiaveis ou enganadores", "c": "A IA e sempre demasiado cara para um departamento publico testar", "explanation": "O vies dos dados e a ma qualidade dos dados sao riscos reais e geriveis. O custo nao e um obstaculo sistematico: muitos pilotos continuam acessiveis em pequena escala."},
+                {"prompt": "Qual destas afirmacoes sobre os requisitos de explicabilidade da IA publica esta correta?", "a": "Um cidadao afetado por uma decisao deve poder obter uma razao defensavel", "b": "A explicabilidade e opcional desde que o sistema seja estatisticamente preciso", "c": "Os requisitos de explicabilidade aplicam-se apenas a decisoes tomadas inteiramente por humanos", "explanation": "A explicabilidade e um requisito de governanca sempre que uma decisao afeta os direitos de um cidadao, seja tomada por um humano ou influenciada por IA — a precisao estatistica por si so nao basta."},
+                {"prompt": "O que deveria acontecer antes de escalar um piloto de IA? Selecione todas as opcoes corretas.", "a": "Escolher o fornecedor com o material de marketing mais cuidado", "b": "Definir um problema claro ligado a um resultado mensuravel", "c": "Auditar os resultados do piloto para detetar erros e vies", "explanation": "Um problema bem definido e uma auditoria rigorosa dos resultados sao as condicoes para uma escala responsavel. O marketing do fornecedor nao e um criterio de decisao fiavel."},
+                {"prompt": "Quais destas afirmacoes descrevem corretamente a IA estreita usada atualmente nos servicos publicos? Selecione todas as opcoes corretas.", "a": "E concebida para realizar uma tarefa bem definida, como classificar documentos", "b": "Pode raciocinar e aprender em muitos dominios diferentes como uma pessoa", "c": "E o tipo de IA usado em praticamente todas as implementacoes publicas atuais", "explanation": "A IA estreita faz uma coisa especifica muito bem e representa praticamente toda a IA usada atualmente. A capacidade de raciocinar em dominios variados como um humano descreve a IA geral, que ainda nao existe na pratica."},
             ],
         },
     },
@@ -808,11 +798,11 @@ LOCALIZED_INTERACTIVE_CONTENT = {
             "infographic": {"title": "Schema de reaction sure", "items": [{"value": "1", "label": "Verifier expediteur et lien", "detail": "Les petites fautes et les URL incoherentes sont des signaux frequents."}, {"value": "2", "label": "Verifier hors du message", "detail": "Passez par le site officiel ou un numero connu."}, {"value": "3", "label": "Signaler rapidement", "detail": "La rapidite compte plus que la certitude complete."}]},
             "chart": {"title": "Habitudes de securite a plus fort impact", "caption": "Quelques routines simples empechent une grande part des attaques quotidiennes.", "bars": [{"label": "Pause phishing", "value": 84}, {"label": "Gestionnaire MDP", "value": 71}, {"label": "MFA active", "value": 92}, {"label": "Signalement rapide", "value": 76}]},
             "questions": [
-                {"prompt": "Un email vous dit de verifier votre compte en 10 minutes sinon vous perdrez l'acces. Quelle est la premiere action la plus sure ?", "a": "Cliquer vite pour ne pas perdre l'acces", "b": "Ne pas cliquer et verifier l'expediteur puis aller directement au site officiel", "c": "Le transferer a tous les collegues", "explanation": "Urgence plus lien correspond au schema classique du phishing. Il faut verifier par le canal officiel, pas par le lien du message."},
-                {"prompt": "Quelle pratique de mot de passe est la plus solide ?", "a": "Un mot de passe memorisable reutilise partout", "b": "Une phrase de passe longue et unique par compte, stockee dans un gestionnaire", "c": "Votre nom et votre annee de naissance", "explanation": "Des mots de passe uniques et longs limitent l'impact d'une fuite sur un service unique. La reutilisation etend le dommage a tous les comptes."},
-                {"prompt": "Quel est le principal avantage de l'authentification multifacteur ?", "a": "Elle permet d'avoir un mot de passe plus court", "b": "Un attaquant avec le mot de passe ne peut toujours pas entrer sans second facteur", "c": "Elle remplace totalement le mot de passe", "explanation": "Le second facteur bloque la plupart des acces frauduleux memes en cas de mot de passe vole."},
-                {"prompt": "Vous cliquez sur un lien puis la page vous semble etrange. Que faire ?", "a": "Ne rien dire et attendre", "b": "Signaler immediatement a l'equipe IT ou securite meme sans certitude", "c": "Changer le mot de passe dans quelques jours", "explanation": "La rapidite compte plus que la certitude. Signaler tot permet de contenir l'incident avant qu'il ne s'aggrave."},
-                {"prompt": "Un appelant dit appartenir au support IT et vous demande votre mot de passe pour regler un probleme urgent. Que faites-vous ?", "a": "Le donner car le support doit y avoir acces", "b": "Refuser et verifier l'identite via le numero officiel du service", "c": "Donner un mot de passe temporaire", "explanation": "Le support legitime n'a pas besoin de votre mot de passe. Il faut verifier par le canal officiel connu."},
+                {"prompt": "Un email vous dit de verifier votre compte en 10 minutes sinon vous perdrez l'acces, avec un lien. Quelle est la premiere action la plus sure ?", "a": "Cliquer vite pour ne pas perdre l'acces", "b": "Ne pas cliquer et verifier l'expediteur puis aller directement au site officiel", "c": "Le transferer a tous les collegues", "explanation": "Urgence plus lien correspond au schema classique du phishing. Verifiez par le canal officiel tape directement dans le navigateur, ou un numero deja connu — jamais par le lien du message."},
+                {"prompt": "Le message trompeur qui imite une source de confiance pour inciter quelqu'un a reveler ses identifiants ou installer un logiciel malveillant s'appelle le ______.", "a": "phishing|hameconnage", "b": "", "c": "", "explanation": "Le phishing (hameconnage) imite un expediteur de confiance pour manipuler quelqu'un afin qu'il revele ses identifiants, clique sur un lien malveillant ou installe un logiciel malveillant."},
+                {"prompt": "« Ete2024! » est un mot de passe fort car il contient une majuscule, un chiffre et un symbole.", "a": "Vrai — il respecte toutes les regles de complexite standard", "b": "Faux — les motifs previsibles comme mot+annee+symbole sont parmi les premiers testes par un attaquant ; la longueur et le hasard reel valent mieux que les regles de complexite", "c": "Cela depend de la frequence a laquelle vous le changez", "explanation": "Les regles de complexite (majuscule, chiffre, symbole) n'empechent pas un motif previsible comme mot+annee+symbole de figurer parmi les premieres tentatives d'un attaquant. Une phrase de passe longue et aleatoire est bien plus solide."},
+                {"prompt": "La couche de securite supplementaire qui exige une seconde preuve d'identite en plus du mot de passe — comme un code genere par une application — s'appelle l'______.", "a": "authentification multifacteur|mfa|authentification a deux facteurs|2fa", "b": "", "c": "", "explanation": "Le MFA ajoute une seconde couche : meme si un attaquant possede votre mot de passe, il ne peut pas acceder a votre compte sans le second facteur — un code d'application, un SMS ou une cle physique."},
+                {"prompt": "Un appelant dit appartenir au support IT et vous demande votre mot de passe pour regler un probleme d'acces urgent. Que faites-vous ?", "a": "Le fournir — le support informatique doit avoir acces de toute facon et l'urgence semble legitime", "b": "Refuser, expliquer que le support informatique legitime n'a jamais besoin de votre mot de passe, et rappeler via le numero officiel du service deja connu", "c": "Donner une version temporaire du mot de passe et la changer juste apres l'appel", "explanation": "Le support informatique legitime n'a jamais besoin de votre mot de passe. C'est une attaque de pretexting classique — verifiez l'identite de l'appelant via un canal officiel connu avant de partager quoi que ce soit."},
             ],
         },
         "pt": {
@@ -825,11 +815,11 @@ LOCALIZED_INTERACTIVE_CONTENT = {
             "infographic": {"title": "Padrao de resposta segura", "items": [{"value": "1", "label": "Inspecionar remetente e URL", "detail": "Pequenas alteracoes na escrita e links incoerentes sao sinais frequentes."}, {"value": "2", "label": "Verificar fora da mensagem", "detail": "Use o site oficial ou um numero conhecido."}, {"value": "3", "label": "Reportar rapidamente", "detail": "A rapidez importa mais do que ter certeza absoluta."}]},
             "chart": {"title": "Habitos de seguranca com maior retorno", "caption": "Rotinas simples evitam uma grande parte dos ataques do dia a dia.", "bars": [{"label": "Pausa anti-phishing", "value": 84}, {"label": "Gestor de senhas", "value": 71}, {"label": "MFA ativo", "value": 92}, {"label": "Reporte rapido", "value": 76}]},
             "questions": [
-                {"prompt": "Um email pede para verificar a conta em 10 minutos ou perdera o acesso. Qual e a primeira acao mais segura?", "a": "Clicar depressa para nao perder o acesso", "b": "Nao clicar, verificar o remetente e ir diretamente ao site oficial", "c": "Reencaminhar para todos os colegas", "explanation": "Urgencia com link e o padrao classico de phishing. A verificacao deve ser feita pelo canal oficial, nao pelo link da mensagem."},
-                {"prompt": "Qual pratica de palavra-passe e mais forte?", "a": "Uma palavra-passe memoravel reutilizada em todas as contas", "b": "Uma frase-passe longa e unica por conta guardada num gestor de senhas", "c": "O seu nome e ano de nascimento", "explanation": "Senhas unicas e longas reduzem o impacto de uma violacao num unico servico. A reutilizacao multiplica o dano."},
-                {"prompt": "Qual e o principal beneficio de ativar MFA?", "a": "Permite usar uma senha mais curta", "b": "Mesmo com a senha, o atacante continua sem acesso sem o segundo fator", "c": "Elimina totalmente a necessidade de senha", "explanation": "O segundo fator reduz drasticamente o impacto do roubo de credenciais."},
-                {"prompt": "Clicou num link e depois a pagina pareceu suspeita. O que deve fazer?", "a": "Ficar em silencio e esperar", "b": "Reportar imediatamente a equipa de IT ou seguranca, mesmo sem certeza total", "c": "Mudar a senha em alguns dias", "explanation": "Rapidez vale mais do que certeza. Um reporte precoce permite conter o incidente antes de se alargar."},
-                {"prompt": "Uma pessoa diz ser do suporte IT e pede a sua senha para resolver um problema urgente. O que faz?", "a": "Fornece, porque o suporte deve ter acesso", "b": "Recusa e confirma a identidade pelo numero oficial do servico", "c": "Da uma senha temporaria", "explanation": "Suporte legitimo nao precisa da sua senha. E preciso verificar por um canal oficial conhecido."},
+                {"prompt": "Um email pede para verificar a conta em 10 minutos ou perdera o acesso, com um link. Qual e a primeira acao mais segura?", "a": "Clicar depressa para nao perder o acesso", "b": "Nao clicar, verificar o remetente e ir diretamente ao site oficial", "c": "Reencaminhar para todos os colegas", "explanation": "Urgencia com link e o padrao classico de phishing. Verifique pelo canal oficial digitado diretamente no navegador, ou um numero ja conhecido — nunca pelo link da mensagem."},
+                {"prompt": "A mensagem enganosa que imita uma fonte de confianca para levar alguem a revelar credenciais ou instalar software malicioso chama-se ______.", "a": "phishing", "b": "", "c": "", "explanation": "O phishing imita um remetente de confianca para manipular alguem a revelar credenciais, clicar num link malicioso ou instalar software malicioso."},
+                {"prompt": "«Verao2024!» e uma senha forte porque contem uma letra maiuscula, um numero e um simbolo.", "a": "Verdadeiro — cumpre todas as regras padrao de complexidade", "b": "Falso — padroes previsiveis como palavra+ano+simbolo estao entre os primeiros que um atacante testa; o comprimento e a aleatoriedade real valem mais do que regras de complexidade", "c": "Depende da frequencia com que e alterada", "explanation": "As regras de complexidade (maiuscula, numero, simbolo) nao impedem que um padrao previsivel como palavra+ano+simbolo esteja entre as primeiras tentativas de um atacante. Uma frase-passe longa e aleatoria e muito mais solida."},
+                {"prompt": "A camada extra de seguranca de login que exige uma segunda prova de identidade alem da senha — como um codigo gerado por uma aplicacao — chama-se ______.", "a": "autenticacao multifator|mfa|autenticacao de dois fatores|2fa", "b": "", "c": "", "explanation": "O MFA adiciona uma segunda camada: mesmo que um atacante tenha a sua senha, nao consegue entrar sem o segundo fator — um codigo de aplicacao, um SMS ou um token fisico."},
+                {"prompt": "Um interlocutor afirma ser do suporte de TI e pede a sua senha para resolver um problema urgente de acesso. O que faz?", "a": "Fornece-a — o suporte de TI deve ter acesso de qualquer forma e a urgencia parece legitima", "b": "Recusa, explica que o suporte de TI legitimo nunca precisa da sua senha, e liga de volta usando o numero oficial do servico que ja conhece", "c": "Da uma versao temporaria da senha e muda-a logo depois da chamada", "explanation": "O suporte de TI legitimo nunca precisa da sua senha. Este e um ataque classico de pretexting — verifique a identidade do interlocutor atraves de um canal oficial conhecido antes de partilhar qualquer informacao."},
             ],
         },
     },
@@ -844,11 +834,18 @@ LOCALIZED_INTERACTIVE_CONTENT = {
             "infographic": {"title": "Carte rapide des etats", "items": [{"value": "P&L", "label": "Suit le profit dans le temps", "detail": "Montre revenus, couts directs, charges d'exploitation et resultat net."}, {"value": "Bilan", "label": "Montre ce qui est possede et du", "detail": "Photo a une date donnee des actifs, passifs et capitaux."}, {"value": "Cash", "label": "Explique les mouvements d'argent", "detail": "Montre si l'organisation peut reellement financer son activite."}]},
             "chart": {"title": "Exemple de performance mensuelle", "caption": "Une comparaison simple montre pourquoi un bon revenu ne garantit pas une tresorerie saine.", "bars": [{"label": "Revenus", "value": 88}, {"label": "Marge brute", "value": 63}, {"label": "Resultat net", "value": 39}, {"label": "Cash disponible", "value": 28}]},
             "questions": [
-                {"prompt": "Quel etat montre si l'organisation a realise un profit sur une periode ?", "a": "Le bilan", "b": "Le compte de resultat", "c": "Le registre des actifs", "explanation": "Le compte de resultat presente revenus et charges sur une periode pour aboutir a un profit ou a une perte."},
                 {"prompt": "Le revenu de votre division a augmente de 15 % mais le resultat net a baisse. Ou regarder d'abord ?", "a": "Dans la colonne des actifs du bilan", "b": "Dans les lignes de cout entre le revenu et le resultat net", "c": "Dans le solde de tresorerie d'ouverture", "explanation": "Si le revenu augmente alors que le profit baisse, les couts ont evolue plus vite. Il faut suivre les lignes de cout du haut vers le bas."},
                 {"prompt": "Une entreprise affiche un bon profit ce trimestre mais peine a payer ses fournisseurs. Quelle explication est la plus probable ?", "a": "Les comptables ont commis une erreur", "b": "Le revenu est comptabilise quand il est gagne, mais le cash n'est peut-etre pas encore encaisse", "c": "Les factures fournisseurs ne sont enregistrees qu'au paiement", "explanation": "Le profit repose sur l'activite comptabilisee, alors que la tresorerie depend du mouvement reel d'argent. L'ecart de timing explique la tension."},
-                {"prompt": "Le bilan montre 500 000 $ d'actifs et 320 000 $ de passifs. Quelle est la position nette ?", "a": "820 000 $", "b": "180 000 $", "c": "320 000 $", "explanation": "Les actifs nets correspondent aux actifs moins les passifs : 500 000 moins 320 000 egalent 180 000."},
             ],
+            "matching_activity": {
+                "prompt": "Associez chaque etat financier a ce qu'il vous indique.",
+                "explanation": "Chaque etat repond a une question differente : le compte de resultat demande « avons-nous gagne de l'argent ? », le bilan demande « que possedons-nous et que devons-nous ? », et le tableau de flux de tresorerie demande « avons-nous le cash pour fonctionner ? ». Les lire ensemble revele l'image complete — y compris quand une entreprise rentable manque quand meme de cash.",
+                "pairs": [
+                    {"left": "Compte de resultat (P&L)", "right": "Montre si l'organisation a realise un profit ou une perte sur une periode"},
+                    {"left": "Bilan", "right": "Montre ce que l'organisation possede et doit a un instant donne"},
+                    {"left": "Tableau de flux de tresorerie", "right": "Montre les mouvements reels de cash entrants et sortants sur une periode"},
+                ],
+            },
         },
         "pt": {
             "preview": {"kicker": "Financas em linguagem clara", "headline": "Ler a historia por tras das demonstracoes", "caption": "Um resumo visual que transforma demonstracao de resultados, balanco e caixa em decisoes acionaveis para gestores.", "stats": [{"value": "3", "label": "Demonstracoes-chave"}, {"value": "1", "label": "Lente critica de caixa"}], "tags": ["Gestao", "Decisao", "Bilingue"]},
@@ -860,11 +857,18 @@ LOCALIZED_INTERACTIVE_CONTENT = {
             "infographic": {"title": "Mapa rapido das demonstracoes", "items": [{"value": "DR", "label": "Acompanha o lucro no tempo", "detail": "Mostra receitas, custos diretos, despesas operacionais e resultado liquido."}, {"value": "Balanco", "label": "Mostra o que se possui e se deve", "detail": "Retrato num ponto no tempo de ativos, passivos e capital proprio."}, {"value": "Caixa", "label": "Explica o movimento do dinheiro", "detail": "Revela se a organizacao consegue financiar as operacoes."}]},
             "chart": {"title": "Exemplo de desempenho mensal", "caption": "Uma comparacao simples mostra porque receita forte nao significa caixa saudavel.", "bars": [{"label": "Receita", "value": 88}, {"label": "Margem bruta", "value": 63}, {"label": "Lucro liquido", "value": 39}, {"label": "Caixa disponivel", "value": 28}]},
             "questions": [
-                {"prompt": "Que demonstracao mostra se a organizacao obteve lucro num periodo?", "a": "O balanco", "b": "A demonstracao de resultados", "c": "O registo de ativos", "explanation": "A demonstracao de resultados apresenta receitas e gastos de um periodo para chegar ao lucro ou prejuizo."},
                 {"prompt": "A receita da sua divisao cresceu 15%, mas o lucro liquido caiu. Onde olhar primeiro para perceber por que motivo?", "a": "Na coluna de ativos do balanco", "b": "Nas linhas de custo entre a receita e o lucro liquido", "c": "No saldo inicial do fluxo de caixa", "explanation": "Se a receita sobe e o lucro cai, os custos cresceram mais rapidamente. E preciso seguir as linhas de custo na demonstracao."},
                 {"prompt": "Uma empresa apresenta bom lucro no trimestre, mas tem dificuldade em pagar fornecedores. Qual e a explicacao mais provavel?", "a": "Os contabilistas cometeram um erro", "b": "A receita e reconhecida quando e obtida, mas o dinheiro pode ainda nao ter entrado", "c": "As faturas de fornecedores so sao registadas quando pagas", "explanation": "Lucro segue o principio do acrescimo; caixa depende do movimento real de dinheiro. O diferimento entre ambos explica a tensao."},
-                {"prompt": "O balanco mostra ativos totais de 500 000 $ e passivos totais de 320 000 $. Qual e a posicao liquida?", "a": "820 000 $", "b": "180 000 $", "c": "320 000 $", "explanation": "Posicao liquida = ativos menos passivos. 500 000 menos 320 000 resulta em 180 000."},
             ],
+            "matching_activity": {
+                "prompt": "Associe cada demonstracao financeira ao que ela revela.",
+                "explanation": "Cada demonstracao responde a uma pergunta diferente: a demonstracao de resultados pergunta «ganhamos dinheiro?», o balanco pergunta «o que possuimos e devemos?», e o fluxo de caixa pergunta «temos o caixa para operar?». Le-las em conjunto revela o quadro completo — incluindo quando uma empresa lucrativa ainda assim tem pouco caixa.",
+                "pairs": [
+                    {"left": "Demonstracao de resultados (DR)", "right": "Mostra se a organizacao obteve lucro ou prejuizo num periodo"},
+                    {"left": "Balanco", "right": "Mostra o que a organizacao possui e deve num determinado momento"},
+                    {"left": "Fluxo de caixa", "right": "Mostra o movimento real de caixa, entradas e saidas, durante um periodo"},
+                ],
+            },
         },
     },
     "data-analytics-accountancy": {
@@ -879,10 +883,13 @@ LOCALIZED_INTERACTIVE_CONTENT = {
             "chart": {"title": "Concentration des depenses pres du seuil", "caption": "Une vue par tranches rend le pic juste sous la limite immediatement visible.", "bars": [{"label": "4,4k", "value": 29}, {"label": "4,6k", "value": 37}, {"label": "4,8k", "value": 91}, {"label": "5,0k+", "value": 18}]},
             "questions": [
                 {"prompt": "Dans un jeu de depenses, plusieurs transactions se concentrent juste sous le seuil d'approbation de 5 000 $. Que faut-il en conclure d'abord ?", "a": "Rien, car tout montant sous le seuil est forcement conforme", "b": "Cela merite une revue plus precise car ce motif peut signaler un evitement de seuil", "c": "Il faut licencier immediatement les agents concernes", "explanation": "Une concentration juste sous un seuil de controle est un signal d'alerte a investiguer, pas une preuve a elle seule."},
-                {"prompt": "Que predit la loi de Benford pour un ensemble naturel de montants factures ?", "a": "Les chiffres 1 a 9 doivent apparaitre aussi souvent en premiere position", "b": "Les petits chiffres comme 1, 2 ou 3 apparaissent plus souvent en premiere position", "c": "La majorite des montants doivent finir par zero", "explanation": "La loi de Benford predit une frequence plus elevee des petits chiffres en tete. Un ecart important justifie une analyse plus poussee."},
-                {"prompt": "Vous detectez une anomalie importante dans les donnees. Quelle est la bonne etape suivante ?", "a": "La declarer immediatement comme fraude confirmee", "b": "La documenter comme point a investiguer, pas comme conclusion", "c": "Supprimer les lignes anormales et relancer l'analyse", "explanation": "Une anomalie est une question a traiter. Elle doit etre documentee et verifiee avant toute conclusion."},
                 {"prompt": "Vous devez montrer a un CFO que des depenses se concentrent anormalement autour du seuil de 5 000 $. Quelle visualisation convient le mieux ?", "a": "Un tableau de toutes les transactions superieures a 4 500 $", "b": "Un diagramme en barres par tranche de 200 $ avec le seuil indique", "c": "Un camembert des depenses par categorie", "explanation": "Le diagramme en barres par tranche montre immediatement le pic juste sous le seuil, sans longue explication."},
             ],
+            "sequencing_activity": {
+                "prompt": "Remettez les etapes du flux d'analyse d'audit dans le bon ordre.",
+                "explanation": "Chaque etape s'appuie sur la precedente : impossible de profiler des donnees non comprises, de tester des motifs non profiles, ou de communiquer des constats non investigues. Sauter une etape ressort souvent plus tard comme un constat indefendable.",
+                "steps": ["Comprendre les donnees", "Profiler les donnees", "Appliquer des tests cibles", "Investiguer les exceptions", "Communiquer les constats"],
+            },
         },
         "pt": {
             "preview": {"kicker": "Estudio de analitica de auditoria", "headline": "Transformar sinais em conclusoes claras", "caption": "Um cenario visual que liga testes de dados ao julgamento profissional necessario para explicar uma anomalia com credibilidade.", "stats": [{"value": "5", "label": "Etapas do fluxo"}, {"value": "87", "label": "Despesas sinalizadas"}], "tags": ["Auditoria", "Evidencia visual", "Bilingue"]},
@@ -895,10 +902,13 @@ LOCALIZED_INTERACTIVE_CONTENT = {
             "chart": {"title": "Concentracao de despesas perto do limite", "caption": "Uma visao por faixas torna o agrupamento logo abaixo do limite imediatamente visivel.", "bars": [{"label": "4,4k", "value": 29}, {"label": "4,6k", "value": 37}, {"label": "4,8k", "value": 91}, {"label": "5,0k+", "value": 18}]},
             "questions": [
                 {"prompt": "Num conjunto de despesas, varias transacoes concentram-se logo abaixo do limite de aprovacao de 5 000 $. O que isso justifica mais provavelmente?", "a": "Nada, porque valores abaixo do limite sao sempre conformes", "b": "Uma revisao mais atenta, porque o padrao pode indicar evitacao de limite", "c": "Demissao imediata das pessoas envolvidas", "explanation": "Concentracao logo abaixo de um limite de controlo e um sinal de alerta a investigar, nao prova conclusiva."},
-                {"prompt": "O que preve a Lei de Benford para um conjunto natural de montantes faturados?", "a": "Os digitos de 1 a 9 devem surgir com a mesma frequencia inicial", "b": "Digitos menores como 1, 2 e 3 aparecem mais vezes como primeiro digito", "c": "A maioria dos montantes deve terminar em zero", "explanation": "A Lei de Benford indica maior frequencia de digitos pequenos na primeira posicao. Um desvio relevante justifica analise adicional."},
-                {"prompt": "Identificou uma anomalia significativa nos dados. Qual e o passo seguinte correto?", "a": "Reporta-la imediatamente como fraude confirmada", "b": "Documenta-la como uma questao a investigar, nao como conclusao final", "c": "Apagar os registos anormais e repetir a analise", "explanation": "Uma anomalia e um ponto de investigacao. Deve ser documentada e verificada antes de qualquer conclusao."},
                 {"prompt": "Precisa de mostrar a um CFO que as despesas se concentram de forma anormal perto do limite de 5 000 $. Que visualizacao funciona melhor?", "a": "Uma tabela com todas as transacoes acima de 4 500 $", "b": "Um grafico de barras por faixas de 200 $ com o limite assinalado", "c": "Um grafico circular do gasto por categoria", "explanation": "O grafico de barras por faixas torna o pico imediatamente evidente sem exigir uma explicacao longa."},
             ],
+            "sequencing_activity": {
+                "prompt": "Coloque as etapas do fluxo de analitica de auditoria na ordem correta.",
+                "explanation": "Cada etapa depende da anterior: nao se pode perfilar dados que nao se compreende, testar padroes que nao se perfilou, ou comunicar constatacoes que nao se investigou. Saltar uma etapa costuma aparecer depois como uma constatacao indefensavel.",
+                "steps": ["Compreender os dados", "Perfilar os dados", "Aplicar testes direcionados", "Investigar as excecoes", "Comunicar as constatacoes"],
+            },
         },
     },
 }
@@ -1007,11 +1017,11 @@ def run() -> None:
 
         for p in BLOG_POSTS:
             post = s.exec(select(BlogPost).where(BlogPost.slug == p["slug"])).first()
-            if post:
-                for key, value in p.items():
-                    setattr(post, key, value)
-            else:
-                s.add(BlogPost(**p))
+            if not post:
+                # Only insert if missing. Unlike sample courses, blog posts are
+                # editable from /admin, so an existing row is left alone here
+                # rather than overwritten back to its seed values on restart.
+                s.add(BlogPost(**p, is_published=True))
         s.commit()
         print("Seeded or updated sample courses and blog posts.")
 

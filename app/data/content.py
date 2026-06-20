@@ -15,9 +15,62 @@ SITE = {
     "email": "ppseleke@outlook.com",      # replace with your real address
     "phone": "+250 78 033 6573",           # replace with your real number
     "location": "Kigali, Rwanda ",
+    "city": "Kigali",
+    "country": "Rwanda",
+    "country_code": "RW",
     "linkedin": "https://www.linkedin.com/in/paseka-seleke",
     "year": 2026,
+    # One-line entity description reused in meta tags and structured data.
+    "description": (
+        "eLearning and digital learning consultancy: instructional design, Moodle "
+        "LMS setup and administration, virtual training, AI-powered learning, and "
+        "learner engagement for organisations across Africa and worldwide."
+    ),
 }
+
+# ---------------------------------------------------------------------------
+# Frequently asked questions. Rendered visibly on the home page and emitted as
+# FAQPage structured data so search engines and AI answer engines can quote
+# them directly. Keep answers factual and self contained (no em dashes).
+# ---------------------------------------------------------------------------
+FAQS = [
+    (
+        "What does Paseka Seleke Consultancy do?",
+        "Paseka Seleke Consultancy designs and runs digital learning. Services cover "
+        "instructional design, LMS setup and administration with deep Moodle expertise, "
+        "virtual training and webinar facilitation, AI integration for learning, digital "
+        "academy development, and learner engagement campaigns.",
+    ),
+    (
+        "Where is Paseka Seleke based and who do you work with?",
+        "Paseka Seleke is based in Kigali, Rwanda and works with training academies, "
+        "universities and colleges, NGOs and development organisations, government "
+        "institutions, professional bodies, and corporate training teams across Africa "
+        "and worldwide.",
+    ),
+    (
+        "Which learning platforms do you support?",
+        "Moodle is the core specialism, alongside LearnDash, Brightspace, Canvas, and "
+        "MOOC platforms. Work includes setup, configuration, administration, quiz and "
+        "certificate management, reporting and analytics, and learner support.",
+    ),
+    (
+        "What languages do you work in?",
+        "English, French, and Portuguese, including multilingual course content, "
+        "translations, and learner communications.",
+    ),
+    (
+        "Which instructional design frameworks do you use?",
+        "ADDIE, Bloom's Taxonomy, the Successive Approximation Model (SAM), and Gagne's "
+        "Nine Events of Instruction, chosen to fit the project and audience.",
+    ),
+    (
+        "How can I start a project?",
+        "Use the contact page to request a consultation. Share your goals, audience, "
+        "and platform, and you will get a focused proposal covering design, delivery, "
+        "and learner engagement.",
+    ),
+]
 
 # Top navigation. (label, route name)
 NAV = [
@@ -25,7 +78,7 @@ NAV = [
     ("About", "about"),
     ("Services", "services"),
     ("Sample Courses", "samples"),
-    ("Blog", "blog"),
+    ("Articles", "blog"),
     ("Contact", "contact"),
 ]
 
@@ -101,16 +154,17 @@ CV = {
         "Webinar and virtual event facilitation",
         "Multilingual content (English, French, Portuguese)",
         "Learner engagement and email marketing",
-        "Python and FastAPI",
-        "React and AI assisted development workflows",
     ],
     "lms_platforms": ["Moodle", "LearnDash", "Brightspace", "Canvas", "MOOC platforms"],
     "id_tools": ["Articulate Rise", "Articulate 365", "H5P", "Storyboarding", "Quiz and assessment design"],
     "projects": [
-        "SADA self paced course catalogue and trilingual launch communications.",
-        "Regional data governance and cybersecurity webinar series support.",
-        "Moodle at scale: administration, optimisation, and learner support workflows.",
-      #  "[Insert Paseka's CV details here: add 2 to 3 of your strongest named projects.]",
+        "Successfully deployed a custom Moodle mobile app, achieving a 70% learner adoption rate.",
+        "Spearheaded online learning initiatives for rural and underserved areas using offline-enabled technology, breaking down barriers to entry for online learning.",
+        "Developed an AI-enhanced eLearning reporting dashboard using SQL and PHP, delivering insights on learner engagement and course completion.",
+        "Maintained a 75% course completion rate through gamification and community engagement tools.",
+        "Achieved an 85%+ technical support resolution rate, resolving complex LMS issues to ensure a consistently strong end-user experience.",
+        "Coordinated and facilitated a series of online-led training formats (webinars, hybrid, and instructor-led) for the institution, with an 80% success rate.",
+        "Developed high-impact, engaging micro-learning courses tailored to diverse audiences.",
     ],
   #  "certifications": [
   #      "[Insert Paseka's CV details here: certifications and professional development.]",

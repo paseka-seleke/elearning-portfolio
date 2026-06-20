@@ -10,8 +10,8 @@
 } %}
 
 <section class="mx-auto max-w-7xl px-5 py-14 lg:px-8">
-  <div class="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-    <div class="rounded-[2rem] border border-line bg-panel/90 p-7 shadow-soft">
+  <div class="reveal-3d grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+    <div data-tilt data-tilt-max="4" class="rounded-[2rem] border border-line bg-panel/90 p-7 shadow-soft">
       <span class="eyebrow">Portfolio</span>
       <h1 class="mt-6 font-display text-4xl font-700 tracking-[-0.03em] lg:text-5xl">Sample learning experiences with real interaction patterns.</h1>
       <p class="mt-4 max-w-xl text-base leading-relaxed text-slate2">These are not decorative thumbnails. Each card opens a working lesson with outcomes, scenarios, reflections, trilingual content, and backend-scored knowledge checks.</p>
@@ -52,7 +52,8 @@
     {% set c = card.course %}
     {% set preview = card.preview %}
     <a href="/samples/{{ c.slug }}"
-       class="group flex flex-col overflow-hidden rounded-[2rem] border border-line bg-panel shadow-soft transition-all hover:-translate-y-1 hover:border-accent/35 hover:shadow-lift">
+       data-tilt data-tilt-max="5"
+       class="reveal-3d group flex flex-col overflow-hidden rounded-[2rem] border border-line bg-panel shadow-soft transition-all hover:border-accent/35 hover:shadow-lift">
       <div class="relative border-b border-white/10 p-6 text-white
                   {% if c.accent == 'teal' %}bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.28),_transparent_34%),linear-gradient(135deg,#114b45,#14806f_55%,#7ae7d0)]
                   {% elif c.accent == 'indigo' %}bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.24),_transparent_32%),linear-gradient(135deg,#2d2a74,#4f46e5_58%,#a5b4fc)]

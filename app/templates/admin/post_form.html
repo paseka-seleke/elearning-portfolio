@@ -1,0 +1,104 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}{{ "Edit article" if post else "New article" }}{% endblock %}
+{% block content %}
+
+<p class="text-xs font-700 uppercase tracking-[0.2em] text-accent">Articles</p>
+<h1 class="mt-2 font-display text-3xl font-700 tracking-tight">{{ "Edit article" if post else "Write a new article" }}</h1>
+
+{% if error %}
+<p class="mt-6 rounded-[1.15rem] border border-accent/30 bg-accent/10 px-4 py-3 text-sm font-600 text-accent">{{ error }}</p>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data"
+      action="{{ '/admin/posts/%d/edit' % post.id if post else '/admin/posts/new' }}"
+      class="mt-8 space-y-5 rounded-[1.5rem] border border-line bg-panel/95 p-6 shadow-soft">
+
+  <label class="block">
+    <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Title</span>
+    <input name="title" required value="{{ post.title if post else '' }}"
+           class="mt-2 w-full rounded-[1.15rem] border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+  </label>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <label class="block">
+      <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Slug</span>
+      <input name="slug" placeholder="auto-generated from the title if left blank" value="{{ post.slug if post else '' }}"
+             class="mt-2 w-full rounded-[1.15rem] border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+    </label>
+    <label class="block">
+      <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Category</span>
+      <input name="category" required placeholder="e.g. LMS Lessons Learned" value="{{ post.category if post else '' }}"
+             class="mt-2 w-full rounded-[1.15rem] border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+    </label>
+  </div>
+
+  <label class="block">
+    <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Excerpt</span>
+    <textarea name="excerpt" required rows="2" placeholder="One or two sentences shown on the blog list."
+              class="mt-2 w-full rounded-[1.15rem] border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">{{ post.excerpt if post else '' }}</textarea>
+  </label>
+
+  <label class="block">
+    <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Body</span>
+    <textarea name="body" required rows="14" placeholder="Write the post here. Leave a blank line between paragraphs."
+              class="mt-2 w-full rounded-[1.15rem] border border-line bg-white px-4 py-3 text-sm leading-relaxed focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">{{ post.body if post else '' }}</textarea>
+    <span class="mt-1.5 block text-xs text-slate2">Separate paragraphs with a blank line, the same way the existing posts are written.</span>
+  </label>
+
+  <label class="block max-w-xs">
+    <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Publish date</span>
+    <input name="published" type="date" required value="{{ post.published.isoformat() if post else today }}"
+           class="mt-2 w-full rounded-[1.15rem] border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+  </label>
+
+  <div class="grid gap-4 border-t border-line pt-5 sm:grid-cols-2">
+    <div>
+      <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Cover image</span>
+      {% if post and post.image_path %}
+      <div class="mt-2 flex items-center gap-3 rounded-[1.15rem] border border-line bg-white px-3 py-2.5">
+        <img src="{{ post.image_path }}" alt="" class="h-12 w-12 rounded-lg object-cover">
+        <label class="flex items-center gap-2 text-xs text-slate2">
+          <input type="checkbox" name="remove_image" class="rounded border-line">
+          Remove current image
+        </label>
+      </div>
+      <span class="mt-1.5 block text-xs text-slate2">Choose a new file below to replace it.</span>
+      {% endif %}
+      <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp,.gif"
+             class="mt-2 block w-full rounded-[1.15rem] border border-line bg-white px-4 py-3 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-mist file:px-3 file:py-1.5 file:text-xs file:font-700 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+      <span class="mt-1.5 block text-xs text-slate2">Shown on the article and its preview tile. PNG, JPG, WEBP, or GIF, up to 5 MB.</span>
+    </div>
+
+    <div>
+      <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Attachment (PDF or document)</span>
+      {% if post and post.attachment_path %}
+      <div class="mt-2 flex items-center gap-3 rounded-[1.15rem] border border-line bg-white px-3 py-2.5">
+        <a href="{{ post.attachment_path }}" target="_blank" class="flex-1 truncate text-sm font-600 text-ink hover:text-accent">{{ post.attachment_name }}</a>
+        <label class="flex items-center gap-2 text-xs text-slate2">
+          <input type="checkbox" name="remove_attachment" class="rounded border-line">
+          Remove
+        </label>
+      </div>
+      <span class="mt-1.5 block text-xs text-slate2">Choose a new file below to replace it.</span>
+      {% endif %}
+      <input type="file" name="attachment" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv"
+             class="mt-2 block w-full rounded-[1.15rem] border border-line bg-white px-4 py-3 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-mist file:px-3 file:py-1.5 file:text-xs file:font-700 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
+      <span class="mt-1.5 block text-xs text-slate2">Offered as a download link on the article. PDF, Word, PowerPoint, Excel, TXT, or CSV, up to 20 MB.</span>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
+    <a href="/admin" class="text-sm font-600 text-slate2 hover:text-ink">Cancel</a>
+    <div class="flex gap-3">
+      <button type="submit" name="action" value="draft"
+              class="rounded-full border border-line px-6 py-3 text-sm font-700 text-ink transition-colors hover:border-accent hover:text-accent">
+        Save draft
+      </button>
+      <button type="submit" name="action" value="publish"
+              class="rounded-full bg-accent px-6 py-3 text-sm font-700 text-white transition-colors hover:opacity-90">
+        {{ "Update and publish" if post and post.is_published else "Publish" }}
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %}
