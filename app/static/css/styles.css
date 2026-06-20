@@ -137,6 +137,22 @@ body::before {
   background: linear-gradient(180deg, #fda4af 0%, #f43f5e 100%);
 }
 
+/* On phones, the 4 bar-cards stack in a 2x2 grid (see sample_detail.html)
+   instead of side by side, so each track is much wider relative to its
+   height than on desktop. Without this, a full-width bar reads as a flat
+   colour block rather than a bar. Shorten the track and narrow/centre the
+   bar so it still looks like a bar at that aspect ratio. */
+@media (max-width: 639px) {
+  .chart-track {
+    height: 7.5rem;
+    justify-content: center;
+  }
+
+  .chart-bar {
+    width: 55%;
+  }
+}
+
 .flip-card {
   perspective: 1200px;
 }
