@@ -29,6 +29,7 @@ from sqlmodel import Session, select
 from app.database import get_session
 from app.models import BlogPost
 from app.data import content as C
+from app.assets import asset_version
 
 APP_DIR = Path(__file__).resolve().parent
 UPLOAD_DIR = APP_DIR / "static" / "uploads" / "blog"
@@ -40,7 +41,7 @@ MAX_IMAGE_BYTES = 5 * 1024 * 1024
 MAX_DOCUMENT_BYTES = 20 * 1024 * 1024
 
 templates = Jinja2Templates(directory=str(APP_DIR / "templates"))
-templates.env.globals.update(SITE=C.SITE)
+templates.env.globals.update(SITE=C.SITE, asset_version=asset_version)
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 

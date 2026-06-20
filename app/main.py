@@ -28,11 +28,13 @@ from sqlmodel import Session, select
 from app.database import init_db, get_session
 from app.models import SampleCourse, QuizQuestion, BlogPost, Lead
 from app.data import content as C
+from app.assets import asset_version
 from app import seed, seo, admin
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BASE_DIR.parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+templates.env.globals["asset_version"] = asset_version
 logger = logging.getLogger(__name__)
 
 # Jinja's built-in urlencode leaves "/" unescaped, which is fine for query
@@ -174,6 +176,22 @@ app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY, max_age=60 
 # particular are large (dense chalk-texture letterforms), gzip cuts them by
 # roughly two thirds over the wire.
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+
+@app.middleware("http")
+async def cache_static_assets(request: Request, call_next):
+    """Every /static/* URL is content-hash versioned (see app/assets.py,
+    asset_version()), so the same URL is guaranteed to always be the same
+    bytes. Safe to tell browsers and any CDN in front of this app to cache it
+    for a year without revalidating, repeat visits re-download nothing for
+    assets that haven't changed, and instantly pick up ones that have (since
+    a content change means a different URL)."""
+    response = await call_next(request)
+    if request.url.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    return response
+
+
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 app.include_router(admin.router)
 

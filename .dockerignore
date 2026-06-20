@@ -7,3 +7,4 @@ paseka.db
 .idea/
 .env
 .env.local
+.env.example

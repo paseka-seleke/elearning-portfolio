@@ -12,8 +12,10 @@ This is the interactive foundation you can reuse for any mock learner experience
 
 - **FastAPI + Uvicorn** : Python web backend and server
 - **Jinja2** : server rendered HTML templates
-- **HTMX + Alpine.js** : interactivity without a separate frontend build
-- **Tailwind CSS (Play CDN)** : styling with zero build step
+- **HTMX + Alpine.js** : interactivity without a separate frontend build (self-hosted, in app/static/js/vendor/)
+- **Tailwind CSS** : precompiled to app/static/css/tailwind.css for speed. After
+  adding new utility classes to a template, run `python build_tailwind.py`
+  once to refresh it (downloads the standalone CLI on first run, no Node needed)
 - **SQLite + SQLModel** : file based database, no server to install
 
 

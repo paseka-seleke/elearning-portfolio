@@ -6,4 +6,11 @@ venv/
 .idea/
 .env
 .env.local
+.env.example
+
 app/static/uploads/
+
+# Standalone Tailwind CLI binary (40MB+), build_tailwind.py downloads it on
+# demand. The CSS it produces (app/static/css/tailwind.css) IS committed.
+/tailwindcss
+/tailwindcss.exe

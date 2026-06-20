@@ -7,8 +7,8 @@
       <div class="md:col-span-2">
         <div class="flex items-center gap-2.5">
           <span class="grid h-10 w-10 place-items-center rounded-2xl bg-white text-ink font-display font-bold">P</span>
-          <img src="/static/brand/paseka-seleke-signature-reversed.svg?v=2"
-               alt="{{ SITE.name }}"
+          <img src="/static/brand/paseka-seleke-signature-reversed.svg?v={{ asset_version('brand/paseka-seleke-signature-reversed.svg') }}"
+               alt="{{ SITE.name }}" loading="lazy" decoding="async"
                class="h-11 w-auto max-w-[17rem]">
         </div>
         <p class="mt-4 max-w-md text-sm leading-relaxed text-white/70">{{ SITE.tagline }}. Design, build, manage, and scale engaging digital learning ecosystems across teams, countries, and languages.</p>

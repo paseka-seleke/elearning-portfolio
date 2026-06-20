@@ -8,6 +8,11 @@
   'use strict';
 
   const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The neural canvas is a continuous O(n^2) particle simulation purely for
+  // mouse-driven flourish. Skip it on touch/small-screen devices: there's no
+  // mouse to react to, and it's the single most CPU/battery-hungry thing on
+  // the page, exactly where mobile can least afford it.
+  const SKIP_HEAVY_FX = window.matchMedia('(pointer: coarse), (max-width: 768px)').matches;
 
   // ─── 1. Neural Network Background Canvas ─────────────────────────────────
   function initNeuralCanvas() {
@@ -433,7 +438,7 @@
 
   // ─── Boot ─────────────────────────────────────────────────────────────────
   function boot() {
-    if (!REDUCE) initNeuralCanvas();
+    if (!REDUCE && !SKIP_HEAVY_FX) initNeuralCanvas();
     initTiltCards();
     initTimeline();
     initFoldReveal();

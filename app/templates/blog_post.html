@@ -10,7 +10,8 @@
 
   {% if post.image_path %}
   <div class="mt-6 aspect-[16/9] w-full overflow-hidden rounded-[1.75rem] border border-line/70 bg-mist shadow-soft">
-    <img src="{{ post.image_path }}" alt="" class="h-full w-full object-cover">
+    <img src="{{ post.image_path }}" alt="" fetchpriority="high" decoding="async"
+         width="800" height="450" class="h-full w-full object-cover">
   </div>
   {% endif %}
 
