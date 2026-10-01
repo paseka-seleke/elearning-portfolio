@@ -29,74 +29,27 @@
       {% if submitted %}
       {% include "partials/contact_success.html" %}
       {% else %}
-      <div class="border-b border-line bg-ink px-7 py-6 text-white lg:px-8">
-        <p class="text-[11px] font-700 uppercase tracking-[0.2em] text-white/60">Project Intake</p>
-        <h2 class="mt-3 font-display text-2xl font-700">Tell me what you are trying to build.</h2>
-      </div>
-      <form method="post" action="/contact" hx-post="/contact" hx-target="#contact-box" hx-swap="innerHTML"
-            x-data="{ submitting: false }" @submit="submitting = true" class="space-y-5 px-7 py-7 lg:px-8">
-        <div class="grid gap-4 sm:grid-cols-2">
-          <label class="block">
-            <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Name</span>
-            <input name="name" required class="mt-2 w-full rounded-[1.15rem] border border-line bg-panel px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-          </label>
-          <label class="block">
-            <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Email</span>
-            <input name="email" type="email" required class="mt-2 w-full rounded-[1.15rem] border border-line bg-panel px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-          </label>
-        </div>
-
-        <label class="block">
-          <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Organisation</span>
-          <input name="organisation" class="mt-2 w-full rounded-[1.15rem] border border-line bg-panel px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-        </label>
-
-        <div class="grid gap-4 sm:grid-cols-2">
-          <label class="block">
-            <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Country</span>
-            <input name="country" class="mt-2 w-full rounded-[1.15rem] border border-line bg-panel px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-          </label>
-          <label class="block">
-            <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Time zone</span>
-            <input name="time_zone" placeholder="e.g. Africa/Kigali" class="mt-2 w-full rounded-[1.15rem] border border-line bg-panel px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-          </label>
-        </div>
-
-        <div class="grid gap-4 sm:grid-cols-2">
-          <label class="block">
-            <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Service required</span>
-            <select name="service" class="mt-2 w-full rounded-[1.15rem] border border-line bg-panel px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-              <option value="">Select a service</option>
-              <option>Instructional design</option>
-              <option>LMS setup and administration</option>
-              <option>Digital academy development</option>
-              <option>Virtual training and webinars</option>
-              <option>AI learning solutions</option>
-              <option>Engagement and marketing</option>
-            </select>
-          </label>
-          <label class="block">
-            <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Preferred consultation date</span>
-            <input name="preferred_date" type="date" class="mt-2 w-full rounded-[1.15rem] border border-line bg-panel px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20">
-          </label>
-        </div>
-
-        <label class="block">
-          <span class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Message</span>
-          <textarea name="message" rows="5" class="mt-2 w-full rounded-[1.15rem] border border-line bg-panel px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"></textarea>
-        </label>
-
-        <div class="flex justify-end">
-          <button type="submit"
-                  class="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-700 text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-                  :disabled="submitting">
-            <span x-show="!submitting">Send message</span>
-            <span x-show="submitting" x-cloak>Sending...</span>
-          </button>
-        </div>
-      </form>
+      {% include "partials/contact_form.html" %}
       {% endif %}
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if hcaptcha_site_key %}
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<script>
+  // hCaptcha only auto-renders widgets present when its script loads. An
+  // htmx swap (e.g. re-showing the form after a failed captcha check) drops
+  // in a fresh .h-captcha div that needs an explicit render call.
+  document.body.addEventListener('htmx:afterSwap', function (e) {
+    if (e.detail.target.id !== 'contact-box') return;
+    var el = e.detail.target.querySelector('.h-captcha');
+    if (el && window.hcaptcha && !el.querySelector('iframe')) {
+      hcaptcha.render(el, { sitekey: el.dataset.sitekey });
+    }
+  });
+</script>
+{% endif %}
 {% endblock %}

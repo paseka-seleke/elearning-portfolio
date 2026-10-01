@@ -13,10 +13,10 @@ import os
 import random
 import secrets
 from pathlib import Path
-import smtplib
-from email.message import EmailMessage
 from urllib.parse import quote
 
+import httpx
+import resend
 from fastapi import FastAPI, Request, Depends, Form, HTTPException
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -26,7 +26,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from sqlmodel import Session, select
 
 from app.database import init_db, get_session
-from app.models import SampleCourse, QuizQuestion, BlogPost, Lead
+from app.models import SampleCourse, QuizQuestion, BlogPost, Lead, PageView, FormAttempt
 from app.data import content as C
 from app.assets import asset_version
 from app import seed, seo, admin
@@ -211,41 +211,60 @@ def published_posts(db: Session):
     ).all()
 
 
+def verify_hcaptcha(token: str, remote_ip: str | None) -> bool:
+    """Check a contact form submission's hCaptcha token with hCaptcha's API.
+
+    Returns True (allow the submission through) when hCaptcha is not
+    configured, so local development works without real keys.
+    """
+    secret = os.getenv("HCAPTCHA_SECRET")
+    if not secret:
+        logger.warning("HCAPTCHA_SECRET is not set, skipping captcha verification.")
+        return True
+    if not token:
+        return False
+    try:
+        resp = httpx.post(
+            "https://hcaptcha.com/siteverify",
+            data={"secret": secret, "response": token, "remoteip": remote_ip or ""},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        return bool(resp.json().get("success"))
+    except httpx.HTTPError:
+        logger.exception("hCaptcha verification request failed.")
+        return False
+
+
 def send_contact_email(name: str, email: str, country: str, time_zone: str,
                        organisation: str, service: str, message: str,
                        preferred_date: str) -> None:
-    smtp_host = os.getenv("SMTP_HOST")
-    smtp_port = int(os.getenv("SMTP_PORT", "587"))
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_password = os.getenv("SMTP_PASSWORD")
-    recipient = os.getenv("CONTACT_RECIPIENT_EMAIL", C.SITE["email"])
-    sender = os.getenv("CONTACT_FROM_EMAIL", smtp_user or recipient)
+    api_key = os.getenv("RESEND_API_KEY")
+    recipient = os.getenv("CONTACT_EMAIL", C.SITE["email"])
+    sender = os.getenv("CONTACT_FROM_EMAIL", "Paseka eLearning <onboarding@resend.dev>")
 
-    if not (smtp_host and smtp_user and smtp_password and recipient):
-        logger.info("Contact email not sent, SMTP settings are incomplete.")
+    if not api_key:
+        logger.info("Contact email not sent, RESEND_API_KEY is not set.")
         return
 
-    msg = EmailMessage()
-    msg["Subject"] = f"New contact submission from {name}"
-    msg["From"] = sender
-    msg["To"] = recipient
-    msg["Reply-To"] = email
-    msg.set_content(
-        f"New contact form submission\n\n"
-        f"Name: {name}\n"
-        f"Email: {email}\n"
-        f"Country: {country or '-'}\n"
-        f"Time zone: {time_zone or '-'}\n"
-        f"Organisation: {organisation or '-'}\n"
-        f"Service required: {service or '-'}\n"
-        f"Preferred consultation date: {preferred_date or '-'}\n\n"
-        f"Message:\n{message or '-'}\n"
-    )
-
-    with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
-        server.starttls()
-        server.login(smtp_user, smtp_password)
-        server.send_message(msg)
+    resend.api_key = api_key
+    resend.Emails.send({
+        "from": sender,
+        "to": recipient,
+        "reply_to": email,
+        "subject": f"New contact submission from {name}",
+        "text": (
+            f"New contact form submission\n\n"
+            f"Name: {name}\n"
+            f"Email: {email}\n"
+            f"Country: {country or '-'}\n"
+            f"Time zone: {time_zone or '-'}\n"
+            f"Organisation: {organisation or '-'}\n"
+            f"Service required: {service or '-'}\n"
+            f"Preferred consultation date: {preferred_date or '-'}\n\n"
+            f"Message:\n{message or '-'}\n"
+        ),
+    })
 
 
 def split_outcomes(text: str) -> list[str]:
@@ -662,6 +681,7 @@ def blog_post(request: Request, slug: str, db: Session = Depends(get_session)):
 def contact(request: Request):
     meta, jsonld = seo.contact_seo(request)
     return page(request, "contact.html", active="Contact", submitted=False,
+                hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
                 meta=meta, jsonld=jsonld)
 
 
@@ -672,12 +692,30 @@ def contact_submit(
     country: str = Form(""), time_zone: str = Form(""),
     organisation: str = Form(""), service: str = Form(""),
     message: str = Form(""), preferred_date: str = Form(""),
+    h_captcha_response: str = Form("", alias="h-captcha-response"),
     db: Session = Depends(get_session),
 ):
+    site_key = os.getenv("HCAPTCHA_SITE_KEY", "")
+    remote_ip = request.client.host if request.client else None
+    if not verify_hcaptcha(h_captcha_response, remote_ip):
+        db.add(FormAttempt(success=False, reason="captcha_failed"))
+        db.commit()
+        captcha_error = "Captcha check failed, please try again."
+        if request.headers.get("HX-Request") == "true":
+            return page(request, "partials/contact_form.html",
+                        hcaptcha_site_key=site_key, captcha_error=captcha_error)
+        meta, jsonld = seo.contact_seo(request)
+        return page(request, "contact.html", active="Contact", submitted=False,
+                    hcaptcha_site_key=site_key, captcha_error=captcha_error,
+                    meta=meta, jsonld=jsonld)
+
     lead = Lead(name=name, email=email, country=country, time_zone=time_zone,
                 organisation=organisation,
                 service=service, message=message, preferred_date=preferred_date)
     db.add(lead)
+    db.commit()
+    db.refresh(lead)
+    db.add(FormAttempt(success=True, reason="ok", lead_id=lead.id))
     db.commit()
     try:
         send_contact_email(name, email, country, time_zone, organisation,
@@ -689,3 +727,45 @@ def contact_submit(
     meta, jsonld = seo.contact_seo(request)
     return page(request, "contact.html", active="Contact", submitted=True, name=name,
                 meta=meta, jsonld=jsonld)
+
+
+# --------------------------------------------------------------------------- #
+#  Analytics
+#
+#  Self-hosted and anonymous: app/static/js/analytics.js logs a pageview on
+#  load (only once the visitor has accepted cookies, see cookie_banner.html),
+#  then reports time-on-page in a second, best-effort beacon when they leave.
+#  visitor_id is a random id kept in localStorage, no personal data.
+# --------------------------------------------------------------------------- #
+@app.post("/api/track/pageview")
+def track_pageview(
+    request: Request,
+    path: str = Form(...), referrer: str = Form(""), visitor_id: str = Form(""),
+    db: Session = Depends(get_session),
+):
+    view = PageView(
+        path=path[:255], referrer=referrer[:500], visitor_id=visitor_id[:64],
+        user_agent=request.headers.get("user-agent", "")[:300],
+    )
+    db.add(view)
+    db.commit()
+    db.refresh(view)
+    return {"id": view.id}
+
+
+@app.post("/api/track/duration", status_code=204)
+async def track_duration(request: Request, db: Session = Depends(get_session)):
+    try:
+        data = await request.json()
+    except (json.JSONDecodeError, ValueError):
+        return Response(status_code=204)
+    view_id = data.get("id")
+    duration = data.get("duration")
+    valid = isinstance(view_id, int) and isinstance(duration, (int, float)) and 0 <= duration < 7200
+    if valid:
+        view = db.get(PageView, view_id)
+        if view:
+            view.duration_seconds = duration
+            db.add(view)
+            db.commit()
+    return Response(status_code=204)

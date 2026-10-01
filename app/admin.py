@@ -9,6 +9,10 @@ library here on purpose, this protects one person's own content on one site,
 not multiple accounts. Set ADMIN_PASSWORD (and optionally ADMIN_USERNAME) in
 .env. If ADMIN_PASSWORD is not set, login is disabled entirely.
 
+Brute force protection: failed logins are logged per IP (LoginAttempt), and
+an IP is locked out of /admin/login for a while after too many failures in a
+row. See login_lockout_minutes_remaining() below.
+
 Uploads: a cover image and/or a PDF/document attachment can be attached to an
 article. Files are saved under app/static/uploads/blog/ with a random name
 (the original filename is never trusted as a path) and served straight from
@@ -18,16 +22,17 @@ import os
 import re
 import secrets
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from fastapi import APIRouter, Request, Form, File, UploadFile, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlmodel import Session, select
+from sqlalchemy import func
+from sqlmodel import Session, select, delete
 
 from app.database import get_session
-from app.models import BlogPost
+from app.models import BlogPost, Lead, PageView, FormAttempt, LoginAttempt
 from app.data import content as C
 from app.assets import asset_version
 
@@ -39,6 +44,11 @@ IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 DOCUMENT_EXTENSIONS = {".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx", ".txt", ".csv"}
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
 MAX_DOCUMENT_BYTES = 20 * 1024 * 1024
+
+# Login rate limiting: an IP gets locked out once it has this many failed
+# attempts within the window below, until enough of them age out.
+MAX_LOGIN_ATTEMPTS = 5
+LOGIN_LOCKOUT_MINUTES = 15
 
 templates = Jinja2Templates(directory=str(APP_DIR / "templates"))
 templates.env.globals.update(SITE=C.SITE, asset_version=asset_version)
@@ -114,15 +124,56 @@ def delete_upload_file(url_path: str | None) -> None:
 # --------------------------------------------------------------------------- #
 #  Login / logout
 # --------------------------------------------------------------------------- #
+def get_client_ip(request: Request) -> str:
+    # Railway (and most PaaS) sits behind a proxy, so the real visitor IP is
+    # in X-Forwarded-For, not request.client.host (that's the proxy's IP).
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+def login_lockout_minutes_remaining(db: Session, ip: str) -> int:
+    """0 if this IP may attempt to log in now, otherwise how many more
+    minutes it is locked out for. A sliding window: once the oldest failure
+    counted toward the lockout ages past LOGIN_LOCKOUT_MINUTES, the count
+    drops and the lockout lifts on its own, no separate expiry to track."""
+    since = datetime.utcnow() - timedelta(minutes=LOGIN_LOCKOUT_MINUTES)
+    recent_failures = db.exec(
+        select(LoginAttempt.created)
+        .where(LoginAttempt.ip == ip, LoginAttempt.success == False, LoginAttempt.created >= since)  # noqa: E712
+        .order_by(LoginAttempt.created.desc())
+        .limit(MAX_LOGIN_ATTEMPTS)
+    ).all()
+    if len(recent_failures) < MAX_LOGIN_ATTEMPTS:
+        return 0
+    unlock_at = recent_failures[-1] + timedelta(minutes=LOGIN_LOCKOUT_MINUTES)
+    remaining = (unlock_at - datetime.utcnow()).total_seconds() / 60
+    return max(1, int(remaining) + 1)
+
+
+def lockout_message(remaining: int) -> str:
+    unit = "minute" if remaining == 1 else "minutes"
+    return f"Too many failed attempts. Try again in {remaining} {unit}."
+
+
 @router.get("/login", response_class=HTMLResponse, include_in_schema=False)
-def login_form(request: Request):
+def login_form(request: Request, db: Session = Depends(get_session)):
     if request.session.get("admin"):
         return RedirectResponse("/admin", status_code=303)
-    return admin_page(request, "login.html", error=None)
+    remaining = login_lockout_minutes_remaining(db, get_client_ip(request))
+    error = lockout_message(remaining) if remaining else None
+    return admin_page(request, "login.html", error=error)
 
 
 @router.post("/login", response_class=HTMLResponse, include_in_schema=False)
-def login_submit(request: Request, username: str = Form(""), password: str = Form("")):
+def login_submit(request: Request, username: str = Form(""), password: str = Form(""),
+                  db: Session = Depends(get_session)):
+    ip = get_client_ip(request)
+    remaining = login_lockout_minutes_remaining(db, ip)
+    if remaining:
+        return admin_page(request, "login.html", error=lockout_message(remaining))
+
     admin_password = os.getenv("ADMIN_PASSWORD")
     admin_username = os.getenv("ADMIN_USERNAME", "admin")
 
@@ -135,8 +186,16 @@ def login_submit(request: Request, username: str = Form(""), password: str = For
     username_ok = secrets.compare_digest(username.strip(), admin_username)
     password_ok = secrets.compare_digest(password, admin_password)
     if not (username_ok and password_ok):
+        db.exec(delete(LoginAttempt).where(LoginAttempt.created < datetime.utcnow() - timedelta(days=1)))
+        db.add(LoginAttempt(ip=ip, success=False))
+        db.commit()
+        remaining = login_lockout_minutes_remaining(db, ip)
+        if remaining:
+            return admin_page(request, "login.html", error=lockout_message(remaining))
         return admin_page(request, "login.html", error="Incorrect username or password.")
 
+    db.add(LoginAttempt(ip=ip, success=True))
+    db.commit()
     request.session["admin"] = True
     return RedirectResponse("/admin", status_code=303)
 
@@ -154,6 +213,63 @@ def logout(request: Request):
 def dashboard(request: Request, db: Session = Depends(get_session)):
     posts = db.exec(select(BlogPost).order_by(BlogPost.published.desc())).all()
     return admin_page(request, "dashboard.html", posts=posts)
+
+
+# --------------------------------------------------------------------------- #
+#  Form submissions
+# --------------------------------------------------------------------------- #
+@router.get("/submissions", response_class=HTMLResponse, dependencies=[Depends(require_admin)], include_in_schema=False)
+def submissions(request: Request, db: Session = Depends(get_session)):
+    leads = db.exec(select(Lead).order_by(Lead.created.desc())).all()
+    return admin_page(request, "submissions.html", leads=leads)
+
+
+# --------------------------------------------------------------------------- #
+#  Analytics: visits, time on page, contact form funnel
+# --------------------------------------------------------------------------- #
+@router.get("/analytics", response_class=HTMLResponse, dependencies=[Depends(require_admin)], include_in_schema=False)
+def analytics(request: Request, db: Session = Depends(get_session)):
+    since = datetime.utcnow() - timedelta(days=30)
+
+    total_views = db.exec(select(func.count()).select_from(PageView)).one()
+    recent_views = db.exec(
+        select(func.count()).select_from(PageView).where(PageView.created >= since)
+    ).one()
+    unique_visitors = db.exec(
+        select(func.count(func.distinct(PageView.visitor_id)))
+        .where(PageView.created >= since, PageView.visitor_id != "")
+    ).one()
+
+    top_pages = db.exec(
+        select(
+            PageView.path,
+            func.count().label("views"),
+            func.avg(PageView.duration_seconds).label("avg_duration"),
+        )
+        .where(PageView.created >= since)
+        .group_by(PageView.path)
+        .order_by(func.count().desc())
+        .limit(15)
+    ).all()
+
+    attempts_total = db.exec(
+        select(func.count()).select_from(FormAttempt).where(FormAttempt.created >= since)
+    ).one()
+    attempts_success = db.exec(
+        select(func.count()).select_from(FormAttempt)
+        .where(FormAttempt.created >= since, FormAttempt.success == True)  # noqa: E712
+    ).one()
+    attempts_blocked = attempts_total - attempts_success
+
+    recent_leads = db.exec(select(Lead).order_by(Lead.created.desc()).limit(5)).all()
+
+    return admin_page(
+        request, "analytics.html",
+        total_views=total_views, recent_views=recent_views, unique_visitors=unique_visitors,
+        top_pages=top_pages,
+        attempts_total=attempts_total, attempts_success=attempts_success,
+        attempts_blocked=attempts_blocked, recent_leads=recent_leads,
+    )
 
 
 # --------------------------------------------------------------------------- #

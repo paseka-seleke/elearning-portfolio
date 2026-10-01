@@ -1,0 +1,58 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Submissions{% endblock %}
+{% block content %}
+
+<div class="flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="text-xs font-700 uppercase tracking-[0.2em] text-accent">Contact form</p>
+    <h1 class="mt-2 font-display text-3xl font-700 tracking-tight">Submissions</h1>
+  </div>
+  <a href="/admin/analytics" class="rounded-full border border-line px-5 py-2.5 text-sm font-600 text-ink transition-colors hover:border-accent hover:text-accent">
+    View analytics
+  </a>
+</div>
+
+<div class="mt-8 space-y-3" x-data="{ open: null }">
+  {% for lead in leads %}
+  <div class="rounded-[1.5rem] border border-line bg-panel/95 px-5 py-4 shadow-soft">
+    <button type="button" class="flex w-full flex-wrap items-center justify-between gap-4 text-left"
+            @click="open = (open === {{ lead.id }} ? null : {{ lead.id }})">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 text-xs text-slate2">
+          <span>{{ lead.created.strftime('%d %b %Y, %H:%M') }}</span>
+          {% if lead.service %}<span>·</span><span>{{ lead.service }}</span>{% endif %}
+        </div>
+        <h2 class="mt-1 truncate font-display text-base font-700">{{ lead.name }}</h2>
+        <p class="truncate text-sm text-slate2">{{ lead.email }}{% if lead.organisation %} · {{ lead.organisation }}{% endif %}</p>
+      </div>
+      <span class="shrink-0 text-sm font-600 text-accent" x-text="open === {{ lead.id }} ? 'Hide' : 'View'"></span>
+    </button>
+
+    <div x-show="open === {{ lead.id }}" x-cloak class="mt-4 grid gap-3 border-t border-line pt-4 sm:grid-cols-2">
+      <div>
+        <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Email</p>
+        <a href="mailto:{{ lead.email }}" class="mt-1 block text-sm font-600 text-ink hover:text-accent">{{ lead.email }}</a>
+      </div>
+      <div>
+        <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Country / time zone</p>
+        <p class="mt-1 text-sm text-ink">{{ lead.country or "-" }}{% if lead.time_zone %} · {{ lead.time_zone }}{% endif %}</p>
+      </div>
+      <div>
+        <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Organisation</p>
+        <p class="mt-1 text-sm text-ink">{{ lead.organisation or "-" }}</p>
+      </div>
+      <div>
+        <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Preferred consultation date</p>
+        <p class="mt-1 text-sm text-ink">{{ lead.preferred_date or "-" }}</p>
+      </div>
+      <div class="sm:col-span-2">
+        <p class="text-[11px] font-700 uppercase tracking-[0.18em] text-slate2">Message</p>
+        <p class="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink">{{ lead.message or "-" }}</p>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p class="rounded-[1.5rem] border border-line bg-panel/95 px-5 py-8 text-center text-sm text-slate2">No submissions yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

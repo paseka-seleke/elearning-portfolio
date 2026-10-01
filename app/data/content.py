@@ -12,9 +12,9 @@ periods, or parentheses.
 SITE = {
     "name": "Paseka Seleke - Consultancy Services",
     "tagline": "eLearning, LMS, and AI-Powered Learning Solutions",
-    "email": "ppseleke@outlook.com",      # replace with your real address
+    "email": "me@paseka.africa",
     "phone": "+250 78 033 6573",           # replace with your real number
-    "location": "Kigali, Rwanda ",
+    "location": "Kigali, Rwanda and Gauteng, South Africa",
     "city": "Kigali",
     "country": "Rwanda",
     "country_code": "RW",

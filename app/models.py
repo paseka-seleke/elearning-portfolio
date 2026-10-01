@@ -6,6 +6,9 @@ Tables:
   QuizQuestion   a knowledge check question belonging to a sample course
   BlogPost       a "Paseka's Thoughts" article
   Lead           a contact form submission
+  PageView       one page visit, with time-on-page filled in when known
+  FormAttempt    one contact form POST, successful or blocked (e.g. by captcha)
+  LoginAttempt   one /admin/login POST, used for rate limiting and lockout
 
 The interactive backend lives around QuizQuestion: the browser posts answers,
 FastAPI scores them server side, and returns a result fragment via HTMX.
@@ -67,3 +70,39 @@ class Lead(SQLModel, table=True):
     message: str = ""
     preferred_date: str = ""
     created: datetime = Field(default_factory=datetime.utcnow)
+
+
+class PageView(SQLModel, table=True):
+    """One page visit. Reported by app/static/js/analytics.js: a pageview is
+    logged on load, then duration_seconds is filled in via a second,
+    best-effort beacon when the visitor leaves or switches away from the
+    tab. Anonymous: visitor_id is a random id a browser keeps in
+    localStorage, not tied to any personal data."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    path: str = Field(index=True)
+    visitor_id: str = Field(default="", index=True)
+    referrer: str = ""
+    user_agent: str = ""
+    duration_seconds: Optional[float] = None
+    created: datetime = Field(default_factory=datetime.utcnow, index=True)
+
+
+class FormAttempt(SQLModel, table=True):
+    """One POST to /contact, whether or not it went through. Lets the
+    analytics dashboard show a submit funnel (attempts vs completed leads)
+    and surface how much traffic the captcha is blocking."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    success: bool = Field(default=False, index=True)
+    reason: str = ""  # "ok", "captcha_failed"
+    lead_id: Optional[int] = Field(default=None, foreign_key="lead.id")
+    created: datetime = Field(default_factory=datetime.utcnow, index=True)
+
+
+class LoginAttempt(SQLModel, table=True):
+    """One POST to /admin/login. Powers a sliding-window rate limit: an IP
+    with too many recent failures is locked out until enough of them age
+    out of the window. See admin.py's login_lockout_remaining()."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    ip: str = Field(index=True)
+    success: bool = Field(default=False)
+    created: datetime = Field(default_factory=datetime.utcnow, index=True)
