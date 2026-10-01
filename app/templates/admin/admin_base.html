@@ -13,20 +13,44 @@
 
   <!-- Same precompiled Tailwind output the public site uses, see tailwind.config.js -->
   <link rel="stylesheet" href="/static/css/tailwind.css?v={{ asset_version('css/tailwind.css') }}">
+  <style>[x-cloak] { display: none !important; }</style>
+
+  <script defer src="/static/js/vendor/alpine.min.js?v={{ asset_version('js/vendor/alpine.min.js') }}"></script>
 </head>
 <body class="min-h-screen font-body bg-mist text-ink antialiased">
 
   {% if request.session.get('admin') %}
-  <header class="sticky top-0 z-40 border-b border-line bg-panel/95">
-    <div class="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-5">
-      <a href="/admin" class="font-display text-base font-700 tracking-tight">Admin · {{ SITE.name.split(' - ')[0] }}</a>
-      <nav class="flex items-center gap-4 text-sm font-600 text-slate2">
-        <a href="/admin" class="hover:text-ink">Posts</a>
-        <a href="/admin/submissions" class="hover:text-ink">Submissions</a>
-        <a href="/admin/analytics" class="hover:text-ink">Analytics</a>
-        <a href="/admin/posts/new" class="hover:text-ink">New post</a>
-        <a href="/" class="hover:text-ink">View site</a>
-        <a href="/admin/logout" class="rounded-full border border-line px-3 py-1.5 text-ink transition-colors hover:border-accent hover:text-accent">Log out</a>
+  <header x-data="{ open: false }" class="sticky top-0 z-40 border-b border-line bg-panel/95">
+    <div class="mx-auto max-w-5xl px-5">
+      <div class="flex h-16 items-center justify-between gap-4">
+        <a href="/admin" class="min-w-0 truncate font-display text-base font-700 tracking-tight">Admin · {{ SITE.name.split(' - ')[0] }}</a>
+
+        <nav class="hidden lg:flex items-center gap-4 text-sm font-600 text-slate2">
+          <a href="/admin" class="hover:text-ink">Posts</a>
+          <a href="/admin/submissions" class="hover:text-ink">Submissions</a>
+          <a href="/admin/analytics" class="hover:text-ink">Analytics</a>
+          <a href="/admin/posts/new" class="hover:text-ink">New post</a>
+          <a href="/" class="hover:text-ink">View site</a>
+          <a href="/admin/logout" class="rounded-full border border-line px-3 py-1.5 text-ink transition-colors hover:border-accent hover:text-accent">Log out</a>
+        </nav>
+
+        <button type="button" @click="open = !open"
+                class="lg:hidden grid h-10 w-10 shrink-0 place-items-center rounded-full border border-line bg-panel text-ink"
+                aria-label="Toggle menu">
+          <svg x-show="!open" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg x-show="open" x-cloak width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg>
+        </button>
+      </div>
+
+      <nav x-show="open" x-cloak class="lg:hidden pb-4">
+        <div class="grid gap-1 rounded-2xl border border-line bg-white/80 p-2 text-sm font-700">
+          <a href="/admin" class="rounded-xl px-3 py-2.5 text-slate2 hover:bg-mist hover:text-ink">Posts</a>
+          <a href="/admin/submissions" class="rounded-xl px-3 py-2.5 text-slate2 hover:bg-mist hover:text-ink">Submissions</a>
+          <a href="/admin/analytics" class="rounded-xl px-3 py-2.5 text-slate2 hover:bg-mist hover:text-ink">Analytics</a>
+          <a href="/admin/posts/new" class="rounded-xl px-3 py-2.5 text-slate2 hover:bg-mist hover:text-ink">New post</a>
+          <a href="/" class="rounded-xl px-3 py-2.5 text-slate2 hover:bg-mist hover:text-ink">View site</a>
+          <a href="/admin/logout" class="rounded-xl px-3 py-2.5 text-accent hover:bg-mist">Log out</a>
+        </div>
       </nav>
     </div>
   </header>
