@@ -58,8 +58,13 @@
     <textarea name="message" rows="5" class="mt-2 w-full rounded-[1.15rem] border border-line bg-panel px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"></textarea>
   </label>
 
-  {% if hcaptcha_site_key %}
-  <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
+  {% if recaptcha_site_key %}
+  <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+  <p class="text-[11px] text-slate2">
+    Protected by reCAPTCHA. Google's
+    <a href="https://policies.google.com/privacy" class="underline" target="_blank" rel="noopener">Privacy Policy</a> and
+    <a href="https://policies.google.com/terms" class="underline" target="_blank" rel="noopener">Terms of Service</a> apply.
+  </p>
   {% endif %}
 
   <div class="flex justify-end">

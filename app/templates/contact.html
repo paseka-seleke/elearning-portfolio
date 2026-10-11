@@ -37,18 +37,24 @@
 {% endblock %}
 
 {% block extra_scripts %}
-{% if hcaptcha_site_key %}
-<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+{% if recaptcha_site_key %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}" async defer></script>
 <script>
-  // hCaptcha only auto-renders widgets present when its script loads. An
-  // htmx swap (e.g. re-showing the form after a failed captcha check) drops
-  // in a fresh .h-captcha div that needs an explicit render call.
-  document.body.addEventListener('htmx:afterSwap', function (e) {
-    if (e.detail.target.id !== 'contact-box') return;
-    var el = e.detail.target.querySelector('.h-captcha');
-    if (el && window.hcaptcha && !el.querySelector('iframe')) {
-      hcaptcha.render(el, { sitekey: el.dataset.sitekey });
-    }
+  // reCAPTCHA v3 is invisible: fetch a fresh token right before htmx sends
+  // the form (tokens expire after 2 minutes), then resume the request.
+  document.body.addEventListener('htmx:confirm', function (e) {
+    var form = e.detail.elt;
+    var input = form.querySelector && form.querySelector('#g-recaptcha-response');
+    if (!input) return;
+    e.preventDefault();
+    var send = function () { e.detail.issueRequest(); };
+    if (!window.grecaptcha) return send();  // server will reject the empty token
+    grecaptcha.ready(function () {
+      grecaptcha.execute({{ recaptcha_site_key|tojson }}, { action: 'contact' })
+        .then(function (token) { input.value = token; })
+        .catch(function () {})
+        .then(send);
+    });
   });
 </script>
 {% endif %}

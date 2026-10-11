@@ -211,28 +211,40 @@ def published_posts(db: Session):
     ).all()
 
 
-def verify_hcaptcha(token: str, remote_ip: str | None) -> bool:
-    """Check a contact form submission's hCaptcha token with hCaptcha's API.
+RECAPTCHA_MIN_SCORE = float(os.getenv("RECAPTCHA_MIN_SCORE", "0.5"))
 
-    Returns True (allow the submission through) when hCaptcha is not
+
+def verify_recaptcha(token: str, remote_ip: str | None) -> bool:
+    """Check a contact form submission's reCAPTCHA token with Google's API.
+
+    Returns True (allow the submission through) when reCAPTCHA is not
     configured, so local development works without real keys.
     """
-    secret = os.getenv("HCAPTCHA_SECRET")
+    secret = os.getenv("RECAPTCHA_SECRET")
     if not secret:
-        logger.warning("HCAPTCHA_SECRET is not set, skipping captcha verification.")
+        logger.warning("RECAPTCHA_SECRET is not set, skipping captcha verification.")
         return True
     if not token:
         return False
     try:
         resp = httpx.post(
-            "https://hcaptcha.com/siteverify",
+            "https://www.google.com/recaptcha/api/siteverify",
             data={"secret": secret, "response": token, "remoteip": remote_ip or ""},
             timeout=10,
         )
         resp.raise_for_status()
-        return bool(resp.json().get("success"))
+        result = resp.json()
+        if not result.get("success"):
+            return False
+        if result.get("action") != "contact":
+            return False
+        score = result.get("score", 0)
+        if score < RECAPTCHA_MIN_SCORE:
+            logger.warning("reCAPTCHA score %s below threshold.", score)
+            return False
+        return True
     except httpx.HTTPError:
-        logger.exception("hCaptcha verification request failed.")
+        logger.exception("reCAPTCHA verification request failed.")
         return False
 
 
@@ -681,7 +693,7 @@ def blog_post(request: Request, slug: str, db: Session = Depends(get_session)):
 def contact(request: Request):
     meta, jsonld = seo.contact_seo(request)
     return page(request, "contact.html", active="Contact", submitted=False,
-                hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
+                recaptcha_site_key=os.getenv("RECAPTCHA_SITE_KEY", ""),
                 meta=meta, jsonld=jsonld)
 
 
@@ -692,21 +704,21 @@ def contact_submit(
     country: str = Form(""), time_zone: str = Form(""),
     organisation: str = Form(""), service: str = Form(""),
     message: str = Form(""), preferred_date: str = Form(""),
-    h_captcha_response: str = Form("", alias="h-captcha-response"),
+    g_recaptcha_response: str = Form("", alias="g-recaptcha-response"),
     db: Session = Depends(get_session),
 ):
-    site_key = os.getenv("HCAPTCHA_SITE_KEY", "")
+    site_key = os.getenv("RECAPTCHA_SITE_KEY", "")
     remote_ip = request.client.host if request.client else None
-    if not verify_hcaptcha(h_captcha_response, remote_ip):
+    if not verify_recaptcha(g_recaptcha_response, remote_ip):
         db.add(FormAttempt(success=False, reason="captcha_failed"))
         db.commit()
         captcha_error = "Captcha check failed, please try again."
         if request.headers.get("HX-Request") == "true":
             return page(request, "partials/contact_form.html",
-                        hcaptcha_site_key=site_key, captcha_error=captcha_error)
+                        recaptcha_site_key=site_key, captcha_error=captcha_error)
         meta, jsonld = seo.contact_seo(request)
         return page(request, "contact.html", active="Contact", submitted=False,
-                    hcaptcha_site_key=site_key, captcha_error=captcha_error,
+                    recaptcha_site_key=site_key, captcha_error=captcha_error,
                     meta=meta, jsonld=jsonld)
 
     lead = Lead(name=name, email=email, country=country, time_zone=time_zone,
