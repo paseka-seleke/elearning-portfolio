@@ -235,8 +235,10 @@ def verify_recaptcha(token: str, remote_ip: str | None) -> bool:
         resp.raise_for_status()
         result = resp.json()
         if not result.get("success"):
+            logger.warning("reCAPTCHA rejected: %s", result.get("error-codes"))
             return False
         if result.get("action") != "contact":
+            logger.warning("reCAPTCHA action mismatch: %s", result.get("action"))
             return False
         score = result.get("score", 0)
         if score < RECAPTCHA_MIN_SCORE:
