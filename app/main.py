@@ -69,6 +69,19 @@ if not SESSION_SECRET_KEY:
         "will not survive a restart. Set SESSION_SECRET_KEY in .env for production."
     )
 
+
+def _key_hint(value: str | None) -> str:
+    """First 6 characters only, enough to tell which key pair is loaded."""
+    return f"{value[:6]}... ({len(value)} chars)" if value else "NOT SET"
+
+
+# Logged at warning level so it shows up in the default Railway logs.
+logger.warning(
+    "reCAPTCHA keys loaded: site key %s, secret %s",
+    _key_hint(os.getenv("RECAPTCHA_SITE_KEY")),
+    _key_hint(os.getenv("RECAPTCHA_SECRET")),
+)
+
 UI_LABELS = {
     "en": {
         "back_to_samples": "All sample courses",
